@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src 'self' data:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+  <meta name="referrer" content="no-referrer">
+  <title>Learn compas_ifc and compas_viewer</title>
+  <style>
+    :root { color-scheme: light; font-family: system-ui, sans-serif; }
+    body { margin: 0 auto; max-width: 980px; padding: 2rem 1.25rem 5rem; color: #172033; background: #f7f9fc; line-height: 1.55; }
+    main { background: white; padding: 2rem; border: 1px solid #dbe2ee; border-radius: 12px; box-shadow: 0 5px 20px #17203312; }
+    h1, h2, h3 { line-height: 1.2; color: #123b66; }
+    code { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; background: #eef2f7; padding: .1rem .3rem; border-radius: 4px; }
+    pre { overflow-x: auto; padding: 1rem; background: #101827; color: #e8eef8; border-radius: 8px; }
+    pre code { background: transparent; padding: 0; color: inherit; }
+    details { margin: 1rem 0; }
+    summary { cursor: pointer; font-weight: 700; color: #123b66; }
+    .notice { padding: 1rem; border-left: 4px solid #e18b25; background: #fff5e6; }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="notice"><strong>Static reading version:</strong> this GitHub Pages site displays the lesson and code but does not execute Python, install packages, accept IFC uploads, or open a viewer window. Use a controlled Jupyter environment for execution.</p>
+    <h1>Learn <code>compas_ifc</code> and <code>compas_viewer</code></h1>
+<p>In this lesson we will inspect an IFC model, query its elements, export a filtered geometry selection, and open that geometry in <code>compas_viewer</code>.</p>
+<p>The notebook is intentionally split into two ideas: <strong>IFC meaning and data</strong> come from <code>compas_ifc</code>; <strong>interactive geometry inspection</strong> comes from COMPAS and <code>compas_viewer</code>.</p>
+<h2>0. Install the lesson dependencies</h2>
+<p>Run the next cell once in the Jupyter environment used for this lesson. It installs the current COMPAS 2.x-oriented packages used below. If your course environment is already managed, skip the cell and verify the imports in the environment-check cell.</p>
+<ul><li><code>compas_ifc</code> — read, query, and export IFC models</li><li><code>compas</code> — COMPAS geometry and datastructures</li><li><code>compas_viewer</code> — desktop visualization</li><li><code>jupyter</code> — notebook runtime</li></ul>
+<details open><summary>Code cell 1</summary><pre><code>%pip install compas_ifc compas compas_viewer jupyter</code></pre></details>
+<h2>1. Choose an IFC file</h2>
+<p>Put <code>building.ifc</code> beside this notebook, or change <code>IFC_PATH</code>. The notebook does not download or create a model for you: students should work with a known IFC file and record where it came from.</p>
+<details open><summary>Code cell 2</summary><pre><code>from pathlib import Path
+import json
+import subprocess
+import sys
+
+IFC_PATH = Path("building.ifc")
+OUTPUT_DIR = Path("exports")
+OUTPUT_DIR.mkdir(exist_ok=True)
+
+if not IFC_PATH.exists():
+    raise FileNotFoundError(
+        f"Place an IFC file at {IFC_PATH.resolve()} or change IFC_PATH."
+    )
+
+print(f"Using: {IFC_PATH.resolve()}")</code></pre></details>
+<h2>2. Record the environment</h2>
+<p>A reproducible notebook records the interpreter and package versions next to its outputs.</p>
+<details open><summary>Code cell 3</summary><pre><code>import compas
+import compas_ifc
+
+print("Python:", sys.version)
+print("COMPAS:", getattr(compas, "__version__", "unknown"))
+print("compas_ifc:", getattr(compas_ifc, "__version__", "unknown"))
+try:
+    import compas_viewer
+    print("compas_viewer:", getattr(compas_viewer, "__version__", "importable"))
+except ImportError as error:
+    print("compas_viewer is not importable in this kernel:", error)</code></pre></details>
+<h2>3. Use the <code>compas_ifc</code> CLI from Python</h2>
+<p>The CLI is useful for learning because each command has one clear job. The <code>--json</code> option gives the notebook structured data instead of text intended only for a terminal.</p>
+<details open><summary>Code cell 4</summary><pre><code>def run_ifc(*arguments, json_output=True):
+    command = [sys.executable, "-m", "compas_ifc", *map(str, arguments)]
+    if json_output:
+        command.append("--json")
+    result = subprocess.run(
+        command,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    return json.loads(result.stdout) if json_output else result.stdout
+
+info = run_ifc("info", IFC_PATH)
+print(json.dumps(info, indent=2))</code></pre></details>
+<h3>Explore the spatial hierarchy</h3>
+<p>A building model is not just a collection of shapes. Its spatial hierarchy connects projects, buildings, storeys, and elements.</p>
+<details open><summary>Code cell 5</summary><pre><code>tree = run_ifc("tree", IFC_PATH, "--depth", 3)
+print(json.dumps(tree, indent=2))</code></pre></details>
+<h2>4. Query elements by IFC type</h2>
+<p>Change <code>ELEMENT_TYPE</code> and run this cell again. Try <code>IfcWall</code>, <code>IfcWindow</code>, <code>IfcDoor</code>, or <code>IfcSlab</code>.</p>
+<details open><summary>Code cell 6</summary><pre><code>ELEMENT_TYPE = "IfcWall"
+elements_json = run_ifc("list", IFC_PATH, "--type", ELEMENT_TYPE, "--limit", 10)
+print(json.dumps(elements_json, indent=2))</code></pre></details>
+<h2>5. Use the Python object model</h2>
+<p>The same model can be opened through <code>BuildingInformationModel</code>. Start without geometry when the question is about names, types, relationships, or property sets; this keeps the example focused on BIM data.</p>
+<details open><summary>Code cell 7</summary><pre><code>from compas_ifc.bim import BuildingInformationModel
+
+model = BuildingInformationModel(
+    str(IFC_PATH),
+    load_geometries=False,
+    rectify_placements=False,
+)
+
+elements = model.get_elements_by_type(ELEMENT_TYPE)
+print(f"Found {len(elements)} {ELEMENT_TYPE} elements.")
+for element in elements[:5]:
+    print(element.global_id, element.name, element.ifc_type)</code></pre></details>
+<h3>Inspect one element's property sets</h3>
+<p>The wrapper exposes convenient identity fields. The underlying IFC entity provides IFC-specific extensions such as <code>property_sets</code>.</p>
+<details open><summary>Code cell 8</summary><pre><code>if not elements:
+    raise ValueError(f"No {ELEMENT_TYPE} elements were found; try another type.")
+
+first_element = elements[0]
+print("Name:", first_element.name)
+print("GlobalId:", first_element.global_id)
+print("Property sets:")
+print(json.dumps(first_element._ifc_entity.property_sets, indent=2, default=str))</code></pre></details>
+<h2>6. Export the filtered geometry</h2>
+<p>Now we ask <code>compas_ifc</code> for geometry for the selected IFC class. The OBJ is a geometry handoff: semantic IFC data stays in the model, while the exported mesh is convenient for COMPAS visualization.</p>
+<details open><summary>Code cell 9</summary><pre><code>OBJ_PATH = OUTPUT_DIR / f"{ELEMENT_TYPE.lower()}.obj"
+result = subprocess.run(
+    [
+        sys.executable,
+        "-m",
+        "compas_ifc",
+        "export",
+        str(IFC_PATH),
+        "--type",
+        ELEMENT_TYPE,
+        "--to",
+        str(OBJ_PATH),
+    ],
+    check=True,
+    capture_output=True,
+    text=True,
+)
+print(f"Exported: {OBJ_PATH.resolve()}")
+if result.stdout.strip():
+    print(result.stdout)</code></pre></details>
+<h2>7. Load the result as COMPAS geometry</h2>
+<p>A COMPAS <code>Mesh</code> gives us geometry and topology methods independent of the original IFC query.</p>
+<details open><summary>Code cell 10</summary><pre><code>from compas.datastructures import Mesh
+
+mesh = Mesh.from_obj(str(OBJ_PATH))
+print("Vertices:", mesh.number_of_vertices())
+print("Edges:", mesh.number_of_edges())
+print("Faces:", mesh.number_of_faces())
+
+MESH_JSON_PATH = Path("selected_geometry.json")
+mesh.to_json(str(MESH_JSON_PATH))
+print(f"Serialized for the viewer: {MESH_JSON_PATH.resolve()}")</code></pre></details>
+<h2>8. Open <code>compas_viewer</code> without blocking the notebook</h2>
+<p>The viewer code lives in <code>viewer_detached.py</code> so students can read it as a small standalone COMPAS program. The notebook starts it in a separate process.</p>
+<details open><summary>Code cell 11</summary><pre><code>VIEWER_SCRIPT = Path("viewer_detached.py")
+if not VIEWER_SCRIPT.exists():
+    raise FileNotFoundError(VIEWER_SCRIPT)
+
+viewer_process = subprocess.Popen(
+    [sys.executable, str(VIEWER_SCRIPT.resolve())],
+    cwd=str(Path.cwd()),
+    start_new_session=True,
+    stdout=subprocess.DEVNULL,
+    stderr=subprocess.DEVNULL,
+)
+print("Viewer launched in a separate process. Close its window when finished.")
+print("Process id:", viewer_process.pid)</code></pre></details>
+<h2>Exercises</h2>
+<p>1. Change <code>ELEMENT_TYPE</code> to <code>IfcWindow</code> and rerun from the query cell. 2. Add <code>--where</code>, for example <code>"OverallHeight&gt;2"</code>, to a CLI query. 3. Find a storey with <code>run_ifc("list", IFC_PATH, "--type", "IfcBuildingStorey")</code>, then use <code>--in</code> to query only elements contained in it. 4. Change <code>facecolor</code> or <code>linecolor</code> in <code>viewer_detached.py</code> using a COMPAS <code>Color</code> object. 5. Explain why the IFC element's <code>property_sets</code> and the exported COMPAS mesh are useful for different questions.</p>
+  </main>
+</body>
+</html>
