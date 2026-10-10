@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+  <meta name="referrer" content="no-referrer">
+  <meta name="description" content="A beginner browser course for exploring, editing, viewing, and checking IFC objects with COMPAS IFC.">
+  <title>ifc.io — Learn to work with IFC objects</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main>
+    <a class="skip-link" href="#lesson">Skip to lesson</a>
+    <div class="sitebar"><a class="brand" href="index.html">ifc<span>.io</span></a><small>COMPAS IFC · Beginner course</small></div>
+    <p class="back-link"><a href="index.html">← Course introduction and all exercises</a></p>
+    <header class="hero"><h1>Exercise 5 — Create and validate (optional)</h1>
+<p><strong>Goal:</strong> create an IFC object and check whether it contains a required piece of information. Allow 20 minutes. This is a small independent model, so it does not change the supplied sample.</p>
+<p>An information check asks whether a required value is present and has the expected form. It does <strong>not</strong> verify the physical or structural performance of the object.</p></header>
+    <section class="start" aria-labelledby="start-title">
+      <h2 id="start-title">Run this exercise in Binder</h2>
+      <p>Read this exercise here or open its editable notebook in Binder. Run cells from top to bottom with Shift + Enter. Binder already includes the course packages.</p>
+      <div class="downloads"><a class="launch" href="https://mybinder.org/v2/gh/savino-di-noi/compas_ifc_ulb.io/main?urlpath=lab/tree/05_create_and_validate.ipynb" rel="noopener noreferrer">Open the live notebook ↗</a><a href="05_create_and_validate.ipynb" download>Download this notebook</a></div>
+    </section>
+
+    <nav aria-label="Lesson contents"><strong>Lesson contents</strong><ul><li><a href="#section-1">1. State an information requirement</a></li><li><a href="#section-2">2. Create a wall with its information</a></li><li><a href="#section-3">3. Check the result</a></li><li><a href="#section-4">Your turn</a></li></ul></nav>
+    <article id="lesson">
+    <details class="code-cell" open><summary>Python example <span>Cell 1</span></summary><pre><code><span class="tok-keyword">from</span> compas_ifc.bim <span class="tok-keyword">import</span> BuildingInformationModel
+
+model = BuildingInformationModel.template(schema=<span class="tok-string">"IFC4"</span>, unit=<span class="tok-string">"m"</span>)
+storey = model.storeys[<span class="tok-number">0</span>]
+print(<span class="tok-string">"New model:"</span>, model.name)
+print(<span class="tok-string">"Storey:"</span>, storey.name)</code></pre></details>
+<h2 id="section-1">1. State an information requirement</h2>
+<p>Our simple rule says each wall must have a <code>CourseInfo</code> property set with a text <code>note</code>. The <code>Specification</code> describes the rule; <code>validate</code> reports whether objects satisfy it.</p>
+<details class="code-cell" open><summary>Python example <span>Cell 2</span></summary><pre><code><span class="tok-keyword">from</span> pydantic <span class="tok-keyword">import</span> BaseModel
+<span class="tok-keyword">from</span> compas_ifc.validation <span class="tok-keyword">import</span> Specification
+
+<span class="tok-keyword">class</span> CourseInfo(BaseModel):
+    note: str
+
+rule = Specification(
+    name=<span class="tok-string">"Course note"</span>,
+    ifc_types=[<span class="tok-string">"IfcWall"</span>],
+    required_psets={<span class="tok-string">"CourseInfo"</span>: CourseInfo},
+)</code></pre></details>
+<h2 id="section-2">2. Create a wall with its information</h2>
+<p><code>create_wall</code> places the new object under the storey. For this information exercise, it does not need geometry. Try changing the note to your own short explanation.</p>
+<details class="code-cell" open><summary>Python example <span>Cell 3</span></summary><pre><code>wall = model.create_wall(
+    name=<span class="tok-string">"Practice wall"</span>,
+    parent=storey,
+    properties={<span class="tok-string">"CourseInfo"</span>: {<span class="tok-string">"note"</span>: <span class="tok-string">"Created in Binder for learning"</span>}},  <span class="tok-comment"># CHANGE the note</span>
+)
+print(wall.ifc_type, wall.name, wall.global_id)
+print(wall.properties)</code></pre></details>
+<h2 id="section-3">3. Check the result</h2>
+<p>The result says <code>pass</code> or <code>fail</code> for this specified information rule. It is a narrow check, not a general IFC or engineering approval.</p>
+<details class="code-cell" open><summary>Python example <span>Cell 4</span></summary><pre><code><span class="tok-keyword">for</span> result <span class="tok-keyword">in</span> model.validate([rule]):
+    print(result.element_name, result.status, result.missing_psets, result.property_errors)</code></pre></details>
+<h2 id="section-4">Your turn</h2>
+<ul><li>Remove <code>CourseInfo</code> from the <code>create_wall</code> cell, rerun from the template, and compare the validation result.</li><li>Restore the property set and explain what changed.</li><li>What could still be wrong with a wall even when this one information rule passes?</li></ul>
+<p><a href="https://compas.dev/compas_ifc/latest/tutorials/03_validation.html">Upstream validation tutorial</a>.</p>
+    </article>
+    <footer class="footer">ifc.io · An introduction to working with IFC objects using COMPAS IFC</footer>
+  </main>
+</body>
+</html>

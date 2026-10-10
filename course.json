@@ -1,0 +1,31 @@
+{
+  "intro": "compas_ifc_compas_viewer_intro.ipynb",
+  "models": ["sample_building.ifc", "Duplex_A_20110907.ifc"],
+  "exercises": [
+    {
+      "file": "01_open_and_query.ipynb",
+      "title": "1. Open and query an IFC model",
+      "description": "Explore the spatial hierarchy, IFC classes, identities, and property sets."
+    },
+    {
+      "file": "02_geometry_and_viewer.ipynb",
+      "title": "2. Geometry and the browser Viewer",
+      "description": "Inspect volume and surface meshes, then view a wall and window in Binder."
+    },
+    {
+      "file": "03_edit_save_extract.ipynb",
+      "title": "3. Edit, save, and extract",
+      "description": "Rename an object, verify a new IFC file, and make a smaller IFC."
+    },
+    {
+      "file": "04_clashes_and_connections.ipynb",
+      "title": "4. Clashes and relationships",
+      "description": "Compare the sample with a deliberately overlapping two-wall model."
+    },
+    {
+      "file": "05_create_and_validate.ipynb",
+      "title": "5. Create and validate (optional)",
+      "description": "Create an IFC object and check a simple information requirement."
+    }
+  ]
+}

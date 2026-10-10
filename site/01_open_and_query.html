@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+  <meta name="referrer" content="no-referrer">
+  <meta name="description" content="A beginner browser course for exploring, editing, viewing, and checking IFC objects with COMPAS IFC.">
+  <title>ifc.io — Learn to work with IFC objects</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main>
+    <a class="skip-link" href="#lesson">Skip to lesson</a>
+    <div class="sitebar"><a class="brand" href="index.html">ifc<span>.io</span></a><small>COMPAS IFC · Beginner course</small></div>
+    <p class="back-link"><a href="index.html">← Course introduction and all exercises</a></p>
+    <header class="hero"><h1>Exercise 1 — Open and query an IFC model</h1>
+<p><strong>Goal:</strong> answer “What is in this file?” using <code>BuildingInformationModel</code>, its spatial tree, and element queries. Allow 20–25 minutes. Run cells in order with <strong>Shift + Enter</strong>. Binder already has <code>compas_ifc</code> installed.</p>
+<p>This exercise starts with the larger Duplex model so searches return more than one object. It has four storeys. A count of zero is still a useful finding, not an error. Set <code>IFC_PATH</code> to <code>sample_building.ifc</code> to compare it with the tiny sample.</p></header>
+    <section class="start" aria-labelledby="start-title">
+      <h2 id="start-title">Run this exercise in Binder</h2>
+      <p>Read this exercise here or open its editable notebook in Binder. Run cells from top to bottom with Shift + Enter. Binder already includes the course packages.</p>
+      <div class="downloads"><a class="launch" href="https://mybinder.org/v2/gh/savino-di-noi/compas_ifc_ulb.io/main?urlpath=lab/tree/01_open_and_query.ipynb" rel="noopener noreferrer">Open the live notebook ↗</a><a href="01_open_and_query.ipynb" download>Download this notebook</a></div>
+    </section>
+
+    <nav aria-label="Lesson contents"><strong>Lesson contents</strong><ul><li><a href="#section-1">1. Follow the spatial tree</a></li><li><a href="#section-2">2. Find objects by IFC class</a></li><li><a href="#section-3">3. Name, index, and GlobalId</a></li><li><a href="#section-4">4. Read the object's information</a></li><li><a href="#section-5">Your turn</a></li></ul></nav>
+    <article id="lesson">
+    <details class="code-cell" open><summary>Python example <span>Cell 1</span></summary><pre><code><span class="tok-keyword">from</span> pathlib <span class="tok-keyword">import</span> Path
+<span class="tok-keyword">from</span> compas_ifc.bim <span class="tok-keyword">import</span> BuildingInformationModel
+
+IFC_PATH = Path(<span class="tok-string">"Duplex_A_20110907.ifc"</span>)  <span class="tok-comment"># CHANGE to sample_building.ifc to compare</span>
+<span class="tok-keyword">if</span> <span class="tok-keyword">not</span> IFC_PATH.is_file():
+    <span class="tok-keyword">raise</span> FileNotFoundError(f"Missing {IFC_PATH}; check the JupyterLab file browser.")
+model = BuildingInformationModel(str(IFC_PATH), load_geometries=<span class="tok-keyword">False</span>, rectify_placements=<span class="tok-keyword">False</span>)
+print(<span class="tok-string">"Model:"</span>, model.name)</code></pre></details>
+<h2 id="section-1">1. Follow the spatial tree</h2>
+<p>The tree answers <strong>where does an object belong?</strong> A typical route is project → site → building → storey → element. A parent is a relationship, not a geometric measurement.</p>
+<p><strong>Predict:</strong> how many storeys does the Duplex model contain? Run the cell, then compare.</p>
+<details class="code-cell" open><summary>Python example <span>Cell 2</span></summary><pre><code>model.print_hierarchy(max_depth=<span class="tok-number">4</span>)
+print(<span class="tok-string">"Storeys:"</span>, len(model.storeys))
+<span class="tok-keyword">for</span> storey <span class="tok-keyword">in</span> model.storeys:
+    print(storey.name, <span class="tok-string">"—"</span>, len(list(storey.children)), <span class="tok-string">"direct children"</span>)</code></pre></details>
+<h2 id="section-2">2. Find objects by IFC class</h2>
+<p><code>get_elements_by_type</code> returns a list. It also includes subclasses: <code>IfcWall</code> can find an <code>IfcWallStandardCase</code>. Try changing <code>TYPE_TO_EXPLORE</code> to <code>IfcWindow</code>.</p>
+<details class="code-cell" open><summary>Python example <span>Cell 3</span></summary><pre><code><span class="tok-keyword">for</span> ifc_type <span class="tok-keyword">in</span> (<span class="tok-string">"IfcWall"</span>, <span class="tok-string">"IfcWindow"</span>, <span class="tok-string">"IfcDoor"</span>, <span class="tok-string">"IfcSlab"</span>):
+    print(ifc_type, len(model.get_elements_by_type(ifc_type)))
+
+TYPE_TO_EXPLORE = <span class="tok-string">"IfcWall"</span>  <span class="tok-comment"># CHANGE to a class with a nonzero count</span>
+matches = model.get_elements_by_type(TYPE_TO_EXPLORE)
+<span class="tok-keyword">for</span> number, item <span class="tok-keyword">in</span> enumerate(matches[:<span class="tok-number">5</span>]):
+    print(number, item.ifc_type, item.name, item.global_id)</code></pre></details>
+<h2 id="section-3">3. Name, index, and GlobalId</h2>
+<p>The number in the preview is only a position in this Python list. An object's <code>global_id</code> is the IFC identifier. Names may repeat; do not use them as unique identifiers.</p>
+<details class="code-cell" open><summary>Python example <span>Cell 4</span></summary><pre><code><span class="tok-keyword">if</span> <span class="tok-keyword">not</span> matches:
+    <span class="tok-keyword">raise</span> ValueError(<span class="tok-string">"Choose a class with a nonzero count, then rerun the previous cell."</span>)
+selected = matches[<span class="tok-number">0</span>]
+same_id = model.get_element_by_global_id(selected.global_id)
+same_name = model.get_elements_by_name(selected.name)
+print(<span class="tok-string">"Class:"</span>, selected.ifc_type)
+print(<span class="tok-string">"Name:"</span>, selected.name)
+print(<span class="tok-string">"GlobalId:"</span>, selected.global_id)
+print(<span class="tok-string">"Found by ID:"</span>, same_id.name <span class="tok-keyword">if</span> same_id <span class="tok-keyword">else</span> <span class="tok-string">"missing"</span>)
+print(<span class="tok-string">"Objects with this exact name:"</span>, len(same_name))
+print(<span class="tok-string">"Parent:"</span>, selected.parent.name <span class="tok-keyword">if</span> selected.parent <span class="tok-keyword">else</span> <span class="tok-string">"none"</span>)</code></pre></details>
+<h2 id="section-4">4. Read the object's information</h2>
+<p><code>properties</code> is a dictionary. A nested dictionary is often a property set. Some values may be empty or absent. Report what the model contains; do not infer a missing property from appearance.</p>
+<details class="code-cell" open><summary>Python example <span>Cell 5</span></summary><pre><code><span class="tok-keyword">import</span> json
+
+print(json.dumps(selected.properties, indent=<span class="tok-number">2</span>, default=str))
+wall_common = selected.properties.get(<span class="tok-string">"Pset_WallCommon"</span>, {})
+print(<span class="tok-string">"IsExternal:"</span>, wall_common.get(<span class="tok-string">"IsExternal"</span>, <span class="tok-string">"not recorded"</span>))
+print(<span class="tok-string">"LoadBearing:"</span>, wall_common.get(<span class="tok-string">"LoadBearing"</span>, <span class="tok-string">"not recorded"</span>))</code></pre></details>
+<h2 id="section-5">Your turn</h2>
+<ol><li>Change <code>TYPE_TO_EXPLORE</code> to <code>IfcWindow</code> and rerun from that cell. Record its Name, GlobalId, and parent.</li><li>Which values describe identity, which describe a relationship, and which are authored properties?</li><li>If your larger model has many walls, show only the first five. Explain why a class search is easier than reading every entity.</li></ol>
+<p><strong>Checkpoint:</strong> another student should be able to find the same object using the GlobalId you recorded. <a href="https://compas.dev/compas_ifc/latest/tutorials/01_open_a_model.html">API reference</a>.</p>
+    </article>
+    <footer class="footer">ifc.io · An introduction to working with IFC objects using COMPAS IFC</footer>
+  </main>
+</body>
+</html>

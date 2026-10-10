@@ -5,11 +5,13 @@ on:
     branches: [main]
     paths:
       - "compas_ifc_compas_viewer_intro.ipynb"
+      - "0*.ipynb"
+      - "course.json"
       - "build_site.py"
       - "style.css"
       - "viewer_detached.py"
       - "README.md"
-      - "sample_building.ifc"
+      - "*.ifc"
       - "binder/environment.yml"
       - "check_lesson.py"
       - ".github/workflows/pages.yml"
@@ -31,7 +33,7 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
-      - run: python -m pip install compas==2.15.1 compas_ifc==2.1.0
+      - run: python -m pip install compas==2.15.1 compas_ifc==2.1.0 compas_notebook==0.11.0
       - run: python check_lesson.py
 
   build:

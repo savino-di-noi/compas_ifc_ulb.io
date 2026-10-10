@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+  <meta name="referrer" content="no-referrer">
+  <meta name="description" content="A beginner browser course for exploring, editing, viewing, and checking IFC objects with COMPAS IFC.">
+  <title>ifc.io — Learn to work with IFC objects</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main>
+    <a class="skip-link" href="#lesson">Skip to lesson</a>
+    <div class="sitebar"><a class="brand" href="index.html">ifc<span>.io</span></a><small>COMPAS IFC · Beginner course</small></div>
+    <p class="back-link"><a href="index.html">← Course introduction and all exercises</a></p>
+    <header class="hero"><h1>Exercise 3 — Edit, save, and extract</h1>
+<p><strong>Goal:</strong> make a small information change safely, write a <strong>new</strong> IFC file, and verify it by reopening. Allow 20–25 minutes. We change a teaching label, not a material or engineering property.</p>
+<p>Every run starts from the original sample. New files appear in <code>exports/</code> in Binder; download them before the temporary session ends.</p></header>
+    <section class="start" aria-labelledby="start-title">
+      <h2 id="start-title">Run this exercise in Binder</h2>
+      <p>Read this exercise here or open its editable notebook in Binder. Run cells from top to bottom with Shift + Enter. Binder already includes the course packages.</p>
+      <div class="downloads"><a class="launch" href="https://mybinder.org/v2/gh/savino-di-noi/compas_ifc_ulb.io/main?urlpath=lab/tree/03_edit_save_extract.ipynb" rel="noopener noreferrer">Open the live notebook ↗</a><a href="03_edit_save_extract.ipynb" download>Download this notebook</a></div>
+    </section>
+
+    <nav aria-label="Lesson contents"><strong>Lesson contents</strong><ul><li><a href="#section-1">1. Change one Name</a></li><li><a href="#section-2">2. Save a new file and reopen it</a></li><li><a href="#section-3">3. Extract a smaller IFC</a></li><li><a href="#section-4">Your turn</a></li></ul></nav>
+    <article id="lesson">
+    <details class="code-cell" open><summary>Python example <span>Cell 1</span></summary><pre><code><span class="tok-keyword">from</span> pathlib <span class="tok-keyword">import</span> Path
+<span class="tok-keyword">from</span> uuid <span class="tok-keyword">import</span> uuid4
+<span class="tok-keyword">from</span> compas_ifc.bim <span class="tok-keyword">import</span> BuildingInformationModel
+
+IFC_PATH = Path(<span class="tok-string">"sample_building.ifc"</span>)  <span class="tok-comment"># CHANGE for another public teaching model</span>
+<span class="tok-keyword">if</span> <span class="tok-keyword">not</span> IFC_PATH.is_file():
+    <span class="tok-keyword">raise</span> FileNotFoundError(f"Missing {IFC_PATH}")
+model = BuildingInformationModel(str(IFC_PATH), load_geometries=<span class="tok-keyword">False</span>, rectify_placements=<span class="tok-keyword">False</span>)
+walls = model.get_elements_by_type(<span class="tok-string">"IfcWall"</span>)
+<span class="tok-keyword">if</span> <span class="tok-keyword">not</span> walls:
+    <span class="tok-keyword">raise</span> ValueError(<span class="tok-string">"Start with the bundled sample or choose a model containing a wall."</span>)
+wall = walls[<span class="tok-number">0</span>]
+original_id, original_name = wall.global_id, wall.name
+print(original_id, original_name)</code></pre></details>
+<h2 id="section-1">1. Change one Name</h2>
+<p>The Python object updates the model in memory. The source IFC on disk is still untouched until we save a new path. Predict whether <code>GlobalId</code> will change.</p>
+<details class="code-cell" open><summary>Python example <span>Cell 2</span></summary><pre><code>NEW_NAME = <span class="tok-string">"My course wall"</span>  <span class="tok-comment"># CHANGE this teaching label</span>
+wall.name = NEW_NAME
+print(<span class="tok-string">"Old Name:"</span>, original_name)
+print(<span class="tok-string">"New Name:"</span>, wall.name)
+print(<span class="tok-string">"Same GlobalId:"</span>, wall.global_id == original_id)</code></pre></details>
+<h2 id="section-2">2. Save a new file and reopen it</h2>
+<p>The short random suffix keeps repeated runs from replacing previous work. Reopening verifies the saved file rather than merely inspecting the in-memory object.</p>
+<details class="code-cell" open><summary>Python example <span>Cell 3</span></summary><pre><code>output_dir = Path(<span class="tok-string">"exports"</span>)
+output_dir.mkdir(exist_ok=<span class="tok-keyword">True</span>)
+run_id = uuid4().hex[:<span class="tok-number">8</span>]
+edited_path = output_dir / f"renamed_{run_id}.ifc"
+<span class="tok-keyword">if</span> edited_path.resolve() == IFC_PATH.resolve() <span class="tok-keyword">or</span> edited_path.exists():
+    <span class="tok-keyword">raise</span> FileExistsError(<span class="tok-string">"Choose a new output path before saving."</span>)
+model.save(str(edited_path))
+
+reopened = BuildingInformationModel(str(edited_path), load_geometries=<span class="tok-keyword">False</span>, rectify_placements=<span class="tok-keyword">False</span>)
+checked = reopened.get_element_by_global_id(original_id)
+<span class="tok-keyword">assert</span> checked <span class="tok-keyword">is</span> <span class="tok-keyword">not</span> <span class="tok-keyword">None</span> <span class="tok-keyword">and</span> checked.name == NEW_NAME
+print(<span class="tok-string">"Saved and checked:"</span>, edited_path)
+print(<span class="tok-string">"GlobalId:"</span>, checked.global_id, <span class="tok-string">"Name:"</span>, checked.name)</code></pre></details>
+<h2 id="section-3">3. Extract a smaller IFC</h2>
+<p><code>extract</code> makes a standalone IFC containing the selected wall and required spatial context. It is a <strong>new model</strong>. We use the reopened edited file so the new label should be included. The sample is small; this matters more on a larger model.</p>
+<details class="code-cell" open><summary>Python example <span>Cell 4</span></summary><pre><code>subset_path = output_dir / f"wall_subset_{run_id}.ifc"
+<span class="tok-keyword">if</span> subset_path.exists() <span class="tok-keyword">or</span> subset_path.resolve() == IFC_PATH.resolve():
+    <span class="tok-keyword">raise</span> FileExistsError(<span class="tok-string">"Choose a new subset path."</span>)
+subset = reopened.extract(reopened.get_elements_by_type(<span class="tok-string">"IfcWall"</span>), path=str(subset_path))
+subset_check = BuildingInformationModel(str(subset_path), load_geometries=<span class="tok-keyword">False</span>, rectify_placements=<span class="tok-keyword">False</span>)
+print(<span class="tok-string">"Subset:"</span>, subset_path)
+print(<span class="tok-string">"Walls:"</span>, len(subset_check.get_elements_by_type(<span class="tok-string">"IfcWall"</span>)), <span class="tok-string">"Storeys:"</span>, len(subset_check.storeys))
+print(<span class="tok-string">"Renamed object in subset:"</span>, subset_check.get_element_by_global_id(original_id).name)</code></pre></details>
+<h2 id="section-4">Your turn</h2>
+<ol><li>Change <code>NEW_NAME</code>, rerun from the first cell, and verify the new file. Explain why you must rerun from the first cell.</li><li>Find your two output files in Binder's file browser and download them.</li><li>Compare source, edited, and subset files: which share the wall's GlobalId? Which contain your new Name?</li></ol>
+<p><strong>Check:</strong> saving a file is not the same as validating an engineering model. This exercise verifies one identity and one label. <a href="https://compas.dev/compas_ifc/latest/tutorials/05_granular_export.html">Upstream granular export tutorial</a>.</p>
+    </article>
+    <footer class="footer">ifc.io · An introduction to working with IFC objects using COMPAS IFC</footer>
+  </main>
+</body>
+</html>

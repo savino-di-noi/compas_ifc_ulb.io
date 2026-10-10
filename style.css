@@ -106,6 +106,14 @@ pre code { background: none; color: inherit; padding: 0; font-size: inherit; }
 }
 .start h2 { margin: 0 0 .5rem; padding: 0; border: 0; font-size: 1.1rem; }
 .start p { color: #535f58; }
+.back-link { margin: 1.3rem 0 -1.7rem; font-size: .9rem; }
+.course-list { margin: 2.4rem 0; }
+.course-list h2 { margin: 0 0 1rem; padding: 0; border: 0; }
+.course-list ol { display: grid; gap: .75rem; padding: 0; list-style: none; }
+.course-card { margin: 0; padding: 1rem 1.2rem; border: 1px solid #e5eae6; border-radius: 7px; }
+.course-card h3 { margin: 0 0 .2rem; font-size: 1rem; }
+.course-card p { margin: 0 0 .55rem; color: #59635e; font-size: .92rem; }
+.course-card div { display: flex; flex-wrap: wrap; gap: .4rem 1.3rem; font-size: .88rem; font-weight: 650; }
 .downloads {
   display: flex;
   flex-wrap: wrap;

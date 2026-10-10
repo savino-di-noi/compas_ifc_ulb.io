@@ -1,4 +1,4 @@
-"""Build a safe, static HTML reading page from the teaching notebook.
+"""Build safe, static HTML reading pages from the teaching notebooks.
 
 This converter intentionally uses only the Python standard library. It does
 not execute notebook cells, preserve notebook outputs, load external scripts,
@@ -16,12 +16,16 @@ import zipfile
 from html import escape
 from io import StringIO
 from pathlib import Path
+from urllib.parse import quote
 
 
 ROOT = Path(__file__).resolve().parent
-NOTEBOOK_PATH = ROOT / "compas_ifc_compas_viewer_intro.ipynb"
 OUTPUT_PATH = ROOT / "site" / "index.html"
-BINDER_URL = "https://mybinder.org/v2/gh/savino-di-noi/compas_ifc_ulb.io/main?urlpath=lab/tree/compas_ifc_compas_viewer_intro.ipynb"
+BINDER_BASE = "https://mybinder.org/v2/gh/savino-di-noi/compas_ifc_ulb.io/main?urlpath=lab/tree/"
+
+
+def binder_url(filename: str) -> str:
+    return BINDER_BASE + quote(filename)
 
 
 def inline_markdown(text: str) -> str:
@@ -30,6 +34,7 @@ def inline_markdown(text: str) -> str:
     rendered = escape(text, quote=False)
     rendered = re.sub(r"`([^`]+)`", r"<code>\1</code>", rendered)
     rendered = re.sub(r"\*\*([^*]+)\*\*", r"<strong>\1</strong>", rendered)
+    rendered = re.sub(r"(?<!\*)\*([^*]+)\*(?!\*)", r"<em>\1</em>", rendered)
     rendered = re.sub(
         r"\[([^\]]+)\]\((https://[^\s)\"'<>]+)\)",
         r'<a href="\2">\1</a>', rendered,
@@ -43,6 +48,7 @@ def render_markdown(source: str) -> str:
     blocks: list[str] = []
     paragraph: list[str] = []
     list_items: list[str] = []
+    list_tag = "ul"
 
     def flush_paragraph() -> None:
         if paragraph:
@@ -51,7 +57,7 @@ def render_markdown(source: str) -> str:
 
     def flush_list() -> None:
         if list_items:
-            blocks.append("<ul>" + "".join(list_items) + "</ul>")
+            blocks.append(f"<{list_tag}>" + "".join(list_items) + f"</{list_tag}>")
             list_items.clear()
 
     for line in source.splitlines():
@@ -69,7 +75,16 @@ def render_markdown(source: str) -> str:
             blocks.append(f"<h3>{inline_markdown(line[4:])}</h3>")
         elif line.startswith("- "):
             flush_paragraph()
+            if list_tag != "ul":
+                flush_list()
+                list_tag = "ul"
             list_items.append(f"<li>{inline_markdown(line[2:])}</li>")
+        elif match := re.match(r"^\d+\. (.+)$", line):
+            flush_paragraph()
+            if list_tag != "ol":
+                flush_list()
+                list_tag = "ol"
+            list_items.append(f"<li>{inline_markdown(match.group(1))}</li>")
         elif line.strip():
             flush_list()
             paragraph.append(line.strip())
@@ -123,7 +138,7 @@ def highlight_python(source: str) -> str:
     return "".join(fragments)
 
 
-def render_notebook(notebook: dict) -> str:
+def render_notebook(notebook: dict, filename: str, exercises: list[dict], is_intro: bool) -> str:
     """Convert notebook markdown and code cells to view-only HTML."""
 
     sections: list[str] = []
@@ -155,6 +170,31 @@ def render_notebook(notebook: dict) -> str:
             )
 
     body = "\n".join(sections)
+    cards = ""
+    if is_intro:
+        entries = []
+        for exercise in exercises:
+            name = exercise["file"]
+            title = escape(exercise["title"])
+            description = escape(exercise["description"])
+            html_name = Path(name).with_suffix(".html").name
+            entries.append(
+                '<li class="course-card">'
+                f'<h3><a href="{html_name}">{title}</a></h3>'
+                f'<p>{description}</p>'
+                f'<div><a href="{html_name}">Read exercise</a>'
+                f'<a href="{binder_url(name)}" rel="noopener noreferrer">Run in Binder ↗</a></div>'
+                '</li>'
+            )
+        cards = '<section class="course-list" aria-labelledby="course-title"><h2 id="course-title">Exercises</h2><ol>' + "".join(entries) + '</ol></section>'
+    back_link = '' if is_intro else '    <p class="back-link"><a href="index.html">← Course introduction and all exercises</a></p>\n'
+    start_title = "Work in your browser" if is_intro else "Run this exercise in Binder"
+    start_text = (
+        "Read the introduction here, then run the notebooks in Binder. The first launch may take several minutes. Download your edited IFC files before the temporary session ends."
+        if is_intro else
+        "Read this exercise here or open its editable notebook in Binder. Run cells from top to bottom with Shift + Enter. Binder already includes the course packages."
+    )
+    download_link = '<a href="lesson.zip" download>Download the complete course</a>' if is_intro else f'<a href="{filename}" download>Download this notebook</a>'
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -162,21 +202,21 @@ def render_notebook(notebook: dict) -> str:
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
   <meta name="referrer" content="no-referrer">
-  <meta name="description" content="A beginner lesson: read IFC objects, edit a name, save and verify with COMPAS IFC.">
+  <meta name="description" content="A beginner browser course for exploring, editing, viewing, and checking IFC objects with COMPAS IFC.">
   <title>ifc.io — Learn to work with IFC objects</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <main>
     <a class="skip-link" href="#lesson">Skip to lesson</a>
-    <div class="sitebar"><a class="brand" href="#">ifc<span>.io</span></a><small>COMPAS IFC · Beginner course</small></div>
-    <header class="hero">{introduction}</header>
+    <div class="sitebar"><a class="brand" href="index.html">ifc<span>.io</span></a><small>COMPAS IFC · Beginner course</small></div>
+{back_link}    <header class="hero">{introduction}</header>
     <section class="start" aria-labelledby="start-title">
-      <h2 id="start-title">Work in your browser</h2>
-      <p>Read the lesson here, then run the examples in the public Binder notebook. It includes the sample IFC. The first launch may take several minutes; download your edited IFC before the temporary session ends.</p>
-      <div class="downloads"><a class="launch" href="{BINDER_URL}" rel="noopener noreferrer">Open the live notebook ↗</a><a href="lesson.zip" download>Download lesson and sample IFC</a></div>
-      <ol class="steps"><li>Read each explanation and predict the result.</li><li>Open Binder and run the matching cell with Shift + Enter.</li><li>Change the sample wall's name, save a new IFC, and download it.</li></ol>
+      <h2 id="start-title">{start_title}</h2>
+      <p>{start_text}</p>
+      <div class="downloads"><a class="launch" href="{binder_url(filename)}" rel="noopener noreferrer">Open the live notebook ↗</a>{download_link}</div>
     </section>
+{cards}
     <nav aria-label="Lesson contents"><strong>Lesson contents</strong><ul>{''.join(navigation)}</ul></nav>
     <article id="lesson">
     {body}
@@ -189,16 +229,24 @@ def render_notebook(notebook: dict) -> str:
 
 
 def main() -> None:
-    notebook = json.loads(NOTEBOOK_PATH.read_text(encoding="utf-8"))
-    if notebook.get("nbformat") != 4:
-        raise ValueError("Expected a nbformat 4 notebook")
+    course = json.loads((ROOT / "course.json").read_text(encoding="utf-8"))
+    exercises = course["exercises"]
+    filenames = [course["intro"], *(entry["file"] for entry in exercises)]
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    with OUTPUT_PATH.open("w", encoding="utf-8", newline="\n") as stream:
-        stream.write(render_notebook(notebook))
+    for number, filename in enumerate(filenames):
+        notebook_path = ROOT / filename
+        notebook = json.loads(notebook_path.read_text(encoding="utf-8"))
+        if notebook.get("nbformat") != 4:
+            raise ValueError(f"Expected a nbformat 4 notebook: {filename}")
+        output = OUTPUT_PATH if number == 0 else OUTPUT_PATH.parent / Path(filename).with_suffix(".html").name
+        with output.open("w", encoding="utf-8", newline="\n") as stream:
+            stream.write(render_notebook(notebook, filename, exercises, number == 0))
+        shutil.copy2(notebook_path, OUTPUT_PATH.parent / filename)
     shutil.copy2(ROOT / "style.css", OUTPUT_PATH.parent / "style.css")
-    downloads = [NOTEBOOK_PATH, ROOT / "sample_building.ifc", ROOT / "README.md"]
+    downloads = [*(ROOT / filename for filename in filenames), *(ROOT / filename for filename in course["models"]), ROOT / "README.md"]
     for path in downloads:
-        shutil.copy2(path, OUTPUT_PATH.parent / path.name)
+        if path.suffix != ".ipynb":
+            shutil.copy2(path, OUTPUT_PATH.parent / path.name)
     with zipfile.ZipFile(OUTPUT_PATH.parent / "lesson.zip", "w", zipfile.ZIP_DEFLATED) as bundle:
         for path in downloads:
             bundle.write(path, arcname=path.name)

@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+  <meta name="referrer" content="no-referrer">
+  <meta name="description" content="A beginner browser course for exploring, editing, viewing, and checking IFC objects with COMPAS IFC.">
+  <title>ifc.io — Learn to work with IFC objects</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main>
+    <a class="skip-link" href="#lesson">Skip to lesson</a>
+    <div class="sitebar"><a class="brand" href="index.html">ifc<span>.io</span></a><small>COMPAS IFC · Beginner course</small></div>
+    <p class="back-link"><a href="index.html">← Course introduction and all exercises</a></p>
+    <header class="hero"><h1>Exercise 2 — Geometry and the browser Viewer</h1>
+<p><strong>Goal:</strong> see the difference between an IFC object's information and its shape. Allow 20–25 minutes. This notebook uses <code>compas_ifc</code> for geometry and <strong>COMPAS Notebook Viewer</strong> for an interactive view <em>inside Binder</em>.</p>
+<p>The desktop <code>compas_viewer</code> used by <code>model.show()</code> in upstream scripts opens a native window, so it is not the Viewer for this hosted exercise. Binder includes <code>compas_notebook</code> for the browser view.</p></header>
+    <section class="start" aria-labelledby="start-title">
+      <h2 id="start-title">Run this exercise in Binder</h2>
+      <p>Read this exercise here or open its editable notebook in Binder. Run cells from top to bottom with Shift + Enter. Binder already includes the course packages.</p>
+      <div class="downloads"><a class="launch" href="https://mybinder.org/v2/gh/savino-di-noi/compas_ifc_ulb.io/main?urlpath=lab/tree/02_geometry_and_viewer.ipynb" rel="noopener noreferrer">Open the live notebook ↗</a><a href="02_geometry_and_viewer.ipynb" download>Download this notebook</a></div>
+    </section>
+
+    <nav aria-label="Lesson contents"><strong>Lesson contents</strong><ul><li><a href="#section-1">1. Inspect shape and measurements</a></li><li><a href="#section-2">2. Make a mesh for display</a></li><li><a href="#section-3">3. View it in Binder</a></li><li><a href="#section-4">Your turn: add the window</a></li><li><a href="#section-5">Think and record</a></li></ul></nav>
+    <article id="lesson">
+    <details class="code-cell" open><summary>Python example <span>Cell 1</span></summary><pre><code><span class="tok-keyword">from</span> pathlib <span class="tok-keyword">import</span> Path
+<span class="tok-keyword">from</span> compas_ifc.bim <span class="tok-keyword">import</span> BuildingInformationModel
+
+IFC_PATH = Path(<span class="tok-string">"Duplex_A_20110907.ifc"</span>)  <span class="tok-comment"># CHANGE to sample_building.ifc to compare</span>
+<span class="tok-keyword">if</span> <span class="tok-keyword">not</span> IFC_PATH.is_file():
+    <span class="tok-keyword">raise</span> FileNotFoundError(f"Missing {IFC_PATH}")
+model = BuildingInformationModel(str(IFC_PATH))  <span class="tok-comment"># geometry is loaded for this exercise</span>
+walls = model.get_elements_by_type(<span class="tok-string">"IfcWall"</span>)
+<span class="tok-keyword">if</span> <span class="tok-keyword">not</span> walls:
+    <span class="tok-keyword">raise</span> ValueError(<span class="tok-string">"This exercise needs a wall. Start with the bundled sample."</span>)
+wall = walls[<span class="tok-number">0</span>]
+print(wall.name, wall.ifc_type, wall.global_id)</code></pre></details>
+<h2 id="section-1">1. Inspect shape and measurements</h2>
+<p>The same object has a class, name, and GlobalId <strong>and</strong> geometric data. The geometry object's Python class describes its representation. <code>volume</code> and <code>surface_area</code> are computed from geometry. Check the model's units before interpreting the numbers: the Duplex file declares metres, so its volume is in m³ and area in m². The small sample instead uses millimetres.</p>
+<details class="code-cell" open><summary>Python example <span>Cell 2</span></summary><pre><code>print(<span class="tok-string">"Representation:"</span>, type(wall.geometry).__name__ <span class="tok-keyword">if</span> wall.geometry <span class="tok-keyword">else</span> <span class="tok-string">"none"</span>)
+print(<span class="tok-string">"Volume:"</span>, wall.volume)
+print(<span class="tok-string">"Surface area:"</span>, wall.surface_area)
+print(<span class="tok-string">"GlobalId still:"</span>, wall.global_id)</code></pre></details>
+<h2 id="section-2">2. Make a mesh for display</h2>
+<p>The surface mesh is a collection of vertices and faces used for viewing. <code>compute_modeltransformation()</code> places the local mesh in model coordinates. It does not change the original IFC file.</p>
+<details class="code-cell" open><summary>Python example <span>Cell 3</span></summary><pre><code>wall_mesh = wall.compute_surface_mesh().transformed(wall.compute_modeltransformation())
+print(<span class="tok-string">"Wall mesh:"</span>, len(list(wall_mesh.vertices())), <span class="tok-string">"vertices and"</span>, len(list(wall_mesh.faces())), <span class="tok-string">"faces"</span>)</code></pre></details>
+<h2 id="section-3">3. View it in Binder</h2>
+<p>Run the next cell and drag in the Viewer to rotate. Scroll to zoom. This is a notebook widget; it may take a few seconds to appear. The IFC object's name and properties are still read in Python, while the Viewer displays its mesh.</p>
+<details class="code-cell" open><summary>Python example <span>Cell 4</span></summary><pre><code><span class="tok-keyword">from</span> compas_notebook.viewer <span class="tok-keyword">import</span> Viewer
+
+viewer = Viewer()
+viewer.scene.add(wall_mesh)
+viewer.show()</code></pre></details>
+<h2 id="section-4">Your turn: add the window</h2>
+<p>The cell below creates a second Viewer with one window and one wall in model coordinates. They may be far apart because they are simply the first objects of each class. Preview only a few elements at a time.</p>
+<details class="code-cell" open><summary>Python example <span>Cell 5</span></summary><pre><code>windows = model.get_elements_by_type(<span class="tok-string">"IfcWindow"</span>)
+<span class="tok-keyword">if</span> windows:
+    window = windows[<span class="tok-number">0</span>]
+    window_mesh = window.compute_surface_mesh().transformed(window.compute_modeltransformation())
+    comparison = Viewer()
+    comparison.scene.add(wall_mesh)
+    comparison.scene.add(window_mesh)
+    comparison.show()
+<span class="tok-keyword">else</span>:
+    print(<span class="tok-string">"No window is recorded in this model."</span>)</code></pre></details>
+<h2 id="section-5">Think and record</h2>
+<ul><li>What information can you learn from the Viewer? What requires reading <code>name</code>, <code>ifc_type</code>, <code>global_id</code>, or <code>properties</code> instead?</li><li>Change <code>IFC_PATH</code> to the small sample and compare its units and shape. If another model has no wall, choose a bundled model before running these cells.</li><li>A computed volume depends on the file's geometry and units. Does it alone tell you material, load, or structural adequacy? Explain.</li></ul>
+<p><a href="https://compas.dev/compas_ifc/latest/tutorials/01_open_a_model.html">Upstream geometry tutorial</a>.</p>
+    </article>
+    <footer class="footer">ifc.io · An introduction to working with IFC objects using COMPAS IFC</footer>
+  </main>
+</body>
+</html>
