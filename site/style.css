@@ -1,0 +1,186 @@
+:root {
+  color-scheme: light;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: #fff;
+  color: #252a2d;
+  font-size: 16px;
+  line-height: 1.68;
+}
+
+main {
+  width: min(100% - 3rem, 860px);
+  margin: 0 auto;
+  padding: 0 0 5rem;
+}
+
+.sitebar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  min-height: 76px;
+  border-bottom: 1px solid #e5e9e7;
+}
+
+.brand {
+  color: #202825;
+  font-size: 20px;
+  font-weight: 750;
+  letter-spacing: -.05em;
+  text-decoration: none;
+}
+.brand span { color: #278351; }
+.sitebar small {
+  color: #66716b;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+}
+
+.hero { padding: 3.3rem 0 1.5rem; }
+.hero h1 {
+  margin: 0 0 1rem;
+  font-size: clamp(2rem, 5vw, 2.75rem);
+  letter-spacing: -.035em;
+  line-height: 1.12;
+}
+.hero p:first-of-type { color: #59635e; font-size: 1.12rem; }
+h1, h2, h3 { color: #202523; line-height: 1.3; }
+h2 {
+  margin: 2.7rem 0 1rem;
+  padding-top: 2rem;
+  border-top: 1px solid #e8ebe9;
+  font-size: 1.45rem;
+  letter-spacing: -.02em;
+  scroll-margin-top: 1rem;
+}
+article > h2:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
+h3 { margin: 1.8rem 0 .65rem; font-size: 1.08rem; }
+p, ul, ol { margin: 0 0 1rem; }
+li { padding-left: .15rem; margin: .25rem 0; }
+li::marker { color: #79857e; }
+
+a { color: #237447; text-underline-offset: .2em; }
+a:hover { color: #145d35; }
+a:focus-visible, summary:focus-visible { outline: 3px solid #7bc59a; outline-offset: 4px; }
+
+code {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  font-size: .88em;
+  color: #207847;
+  background: #f4f7f5;
+  border-radius: 4px;
+  padding: .15rem .32rem;
+}
+pre {
+  margin: 0;
+  padding: 1rem 1.1rem;
+  overflow-x: auto;
+  border-radius: 7px;
+  background: #f6f7f8;
+  color: #29323a;
+  font-size: .92rem;
+  line-height: 1.6;
+  tab-size: 4;
+}
+pre code { background: none; color: inherit; padding: 0; font-size: inherit; }
+.tok-string { color: #207847; }
+.tok-number { color: #087b83; }
+.tok-keyword { color: #0879a5; }
+.tok-comment { color: #637368; }
+
+.start {
+  margin: 1.5rem 0 2rem;
+  padding: 1.4rem 1.5rem;
+  border: 1px solid #e5eae6;
+  border-radius: 8px;
+  background: #fbfcfb;
+}
+.start h2 { margin: 0 0 .5rem; padding: 0; border: 0; font-size: 1.1rem; }
+.start p { color: #535f58; }
+.downloads {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .9rem 1.2rem;
+  margin: 1.2rem 0;
+}
+.launch {
+  display: inline-flex;
+  align-items: center;
+  padding: .65rem 1rem;
+  border-radius: 5px;
+  background: #247848;
+  color: white;
+  font-weight: 650;
+  text-decoration: none;
+}
+.launch:hover { color: white; background: #175c35; }
+.steps { padding-left: 1.35rem; margin-bottom: 0; font-size: .94rem; }
+
+nav {
+  margin: 2rem 0 2.5rem;
+  padding: 0 0 1.5rem;
+  border-bottom: 1px solid #e8ebe9;
+}
+nav > strong {
+  display: block;
+  margin-bottom: .6rem;
+  font-size: .88rem;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+nav ul { columns: 2; column-gap: 3rem; padding-left: 1.2rem; font-size: .94rem; }
+nav li { break-inside: avoid; }
+.code-cell { margin: 1.1rem 0 1.8rem; }
+.code-cell summary {
+  cursor: pointer;
+  margin-bottom: .55rem;
+  color: #343c37;
+  font-size: .85rem;
+  font-weight: 700;
+}
+.code-cell summary span { margin-left: .35rem; color: #758078; font-weight: 500; }
+.footer {
+  margin-top: 3rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e8ebe9;
+  color: #69736d;
+  font-size: .84rem;
+}
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 1rem;
+  padding: .5rem;
+  background: white;
+  z-index: 2;
+}
+.skip-link:focus { top: .5rem; }
+
+@media (max-width: 600px) {
+  main { width: min(100% - 2rem, 860px); }
+  .sitebar { min-height: 62px; }
+  .sitebar small { font-size: 10px; }
+  .hero { padding-top: 2rem; }
+  nav ul { columns: 1; }
+  .start { padding: 1rem; }
+}
+
+@media print {
+  body { color: black; }
+  main { width: 100%; padding: 0; }
+  .sitebar, nav, .downloads, .skip-link { display: none; }
+  .hero { padding: 0; }
+  .start { border: 0; padding: 0; }
+  pre { white-space: pre-wrap; overflow: visible; }
+  .code-cell { break-inside: avoid; }
+}

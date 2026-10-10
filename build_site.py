@@ -8,10 +8,13 @@ or interpret raw HTML from notebook content.
 from __future__ import annotations
 
 import json
+import keyword
 import re
 import shutil
+import tokenize
 import zipfile
 from html import escape
+from io import StringIO
 from pathlib import Path
 
 
@@ -79,13 +82,59 @@ def render_markdown(source: str) -> str:
     return "\n".join(blocks)
 
 
+def highlight_python(source: str) -> str:
+    """Add small, escaped Python highlights without a build-time dependency."""
+
+    lines = source.splitlines(keepends=True)
+    line_offsets = [0]
+    for line in lines:
+        line_offsets.append(line_offsets[-1] + len(line))
+
+    def offset(position: tuple[int, int]) -> int:
+        row, column = position
+        return line_offsets[row - 1] + column
+
+    fragments: list[str] = []
+    cursor = 0
+    try:
+        for token in tokenize.generate_tokens(StringIO(source).readline):
+            if token.type in (tokenize.ENDMARKER, tokenize.INDENT, tokenize.DEDENT):
+                continue
+            start, end = offset(token.start), offset(token.end)
+            if start < cursor:
+                continue
+            fragments.append(escape(source[cursor:start], quote=False))
+            value = escape(source[start:end], quote=False)
+            if token.type == tokenize.STRING:
+                kind = "string"
+            elif token.type == tokenize.COMMENT:
+                kind = "comment"
+            elif token.type == tokenize.NUMBER:
+                kind = "number"
+            elif token.type == tokenize.NAME and keyword.iskeyword(token.string):
+                kind = "keyword"
+            else:
+                kind = ""
+            fragments.append(f'<span class="tok-{kind}">{value}</span>' if kind else value)
+            cursor = end
+    except (tokenize.TokenError, IndentationError):
+        pass
+    fragments.append(escape(source[cursor:], quote=False))
+    return "".join(fragments)
+
+
 def render_notebook(notebook: dict) -> str:
     """Convert notebook markdown and code cells to view-only HTML."""
 
     sections: list[str] = []
     navigation: list[str] = []
     code_number = 0
-    for cell in notebook.get("cells", []):
+    cells = notebook.get("cells", [])
+    introduction = ""
+    if cells and cells[0].get("cell_type") == "markdown":
+        introduction = render_markdown("".join(cells[0].get("source", [])))
+        cells = cells[1:]
+    for cell in cells:
         source = "".join(cell.get("source", []))
         if cell.get("cell_type") == "markdown":
             rendered = render_markdown(source)
@@ -97,10 +146,10 @@ def render_notebook(notebook: dict) -> str:
             sections.append(rendered)
         elif cell.get("cell_type") == "code":
             code_number += 1
-            code = escape(source, quote=False)
+            code = highlight_python(source)
             sections.append(
-                "<details open>"
-                f"<summary>Code cell {code_number}</summary>"
+                '<details class="code-cell" open>'
+                f"<summary>Python example <span>Cell {code_number}</span></summary>"
                 f"<pre><code>{code}</code></pre>"
                 "</details>"
             )
@@ -111,46 +160,28 @@ def render_notebook(notebook: dict) -> str:
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src 'self' data:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
   <meta name="referrer" content="no-referrer">
   <meta name="description" content="A beginner lesson: read IFC objects, edit a name, save and verify with COMPAS IFC.">
   <title>ifc.io — Learn to work with IFC objects</title>
-  <style>
-    :root {{ color-scheme: light; font-family: system-ui, sans-serif; }}
-    body {{ margin: 0 auto; max-width: 980px; padding: 2rem 1.25rem 5rem; color: #172033; background: #f7f9fc; line-height: 1.55; }}
-    main {{ background: white; padding: 2rem; border: 1px solid #dbe2ee; border-radius: 12px; box-shadow: 0 5px 20px #17203312; }}
-    h1, h2, h3 {{ line-height: 1.2; color: #123b66; }}
-    code {{ font-family: ui-monospace, SFMono-Regular, Consolas, monospace; background: #eef2f7; padding: .1rem .3rem; border-radius: 4px; }}
-    pre {{ overflow-x: auto; padding: 1rem; background: #101827; color: #e8eef8; border-radius: 8px; }}
-    pre code {{ background: transparent; padding: 0; color: inherit; }}
-    details {{ margin: 1rem 0; }}
-    summary {{ cursor: pointer; font-weight: 700; color: #123b66; }}
-    .notice {{ padding: 1rem; border-left: 4px solid #e18b25; background: #fff5e6; }}
-    a {{ color: #125b91; text-underline-offset: .2em; }}
-    a:focus-visible, summary:focus-visible {{ outline: 3px solid #e18b25; outline-offset: 4px; }}
-    h2 {{ margin-top: 2.5rem; scroll-margin-top: 1rem; }}
-    nav ul {{ columns: 2; padding-left: 1.25rem; }}
-    .downloads {{ display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; margin: 1.5rem 0; }}
-    .launch {{ display: inline-block; padding: .8rem 1.1rem; border-radius: .5rem; background: #123b66; color: white; font-weight: 700; text-decoration: none; }}
-    .launch:hover {{ background: #0b2e53; }}
-    .steps {{ padding: 1rem 1.25rem; background: #eef5fb; border-radius: .5rem; }}
-    .steps li {{ margin: .35rem 0; }}
-    details {{ border-left: 3px solid #dbe2ee; padding-left: .75rem; }}
-    @media (max-width: 600px) {{ body {{ padding: .5rem; }} main {{ padding: 1rem; }} nav ul {{ columns: 1; }} }}
-    @media print {{ body, main {{ background: white; padding: 0; border: 0; box-shadow: none; }} pre {{ white-space: pre-wrap; background: #eee; color: black; }} nav, .downloads {{ display: none; }} }}
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <main>
-    <a href="#lesson">Skip to lesson</a>
-    <p class="notice"><strong>Work entirely in your browser.</strong> Read the lesson here, then open its runnable notebook on the public Binder service. It includes the sample IFC and COMPAS IFC package. The first launch may take several minutes; save any edited IFC or notebook before closing the temporary session.</p>
-    <div class="downloads"><a class="launch" href="{BINDER_URL}" rel="noopener noreferrer">Open the live notebook on Binder ↗</a><a href="lesson.zip" download>Download lesson and sample IFC</a></div>
-    <ol class="steps"><li>Read the short explanations and predict each result.</li><li>Open Binder and run the matching cell with Shift + Enter.</li><li>Change the sample wall's name, save a new IFC, and download it before the session ends.</li></ol>
-    <p>The live notebook opens on mybinder.org. If the launch reports that the repository is unavailable, the course repository must be made public and the Binder image built before class.</p>
+    <a class="skip-link" href="#lesson">Skip to lesson</a>
+    <div class="sitebar"><a class="brand" href="#">ifc<span>.io</span></a><small>COMPAS IFC · Beginner course</small></div>
+    <header class="hero">{introduction}</header>
+    <section class="start" aria-labelledby="start-title">
+      <h2 id="start-title">Work in your browser</h2>
+      <p>Read the lesson here, then run the examples in the public Binder notebook. It includes the sample IFC. The first launch may take several minutes; download your edited IFC before the temporary session ends.</p>
+      <div class="downloads"><a class="launch" href="{BINDER_URL}" rel="noopener noreferrer">Open the live notebook ↗</a><a href="lesson.zip" download>Download lesson and sample IFC</a></div>
+      <ol class="steps"><li>Read each explanation and predict the result.</li><li>Open Binder and run the matching cell with Shift + Enter.</li><li>Change the sample wall's name, save a new IFC, and download it.</li></ol>
+    </section>
     <nav aria-label="Lesson contents"><strong>Lesson contents</strong><ul>{''.join(navigation)}</ul></nav>
-    <div id="lesson">
+    <article id="lesson">
     {body}
-    </div>
+    </article>
+    <footer class="footer">ifc.io · An introduction to working with IFC objects using COMPAS IFC</footer>
   </main>
 </body>
 </html>
@@ -164,6 +195,7 @@ def main() -> None:
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     with OUTPUT_PATH.open("w", encoding="utf-8", newline="\n") as stream:
         stream.write(render_notebook(notebook))
+    shutil.copy2(ROOT / "style.css", OUTPUT_PATH.parent / "style.css")
     downloads = [NOTEBOOK_PATH, ROOT / "sample_building.ifc", ROOT / "README.md"]
     for path in downloads:
         shutil.copy2(path, OUTPUT_PATH.parent / path.name)

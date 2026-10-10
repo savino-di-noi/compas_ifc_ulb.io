@@ -3,51 +3,31 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src 'self' data:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
   <meta name="referrer" content="no-referrer">
   <meta name="description" content="A beginner lesson: read IFC objects, edit a name, save and verify with COMPAS IFC.">
   <title>ifc.io — Learn to work with IFC objects</title>
-  <style>
-    :root { color-scheme: light; font-family: system-ui, sans-serif; }
-    body { margin: 0 auto; max-width: 980px; padding: 2rem 1.25rem 5rem; color: #172033; background: #f7f9fc; line-height: 1.55; }
-    main { background: white; padding: 2rem; border: 1px solid #dbe2ee; border-radius: 12px; box-shadow: 0 5px 20px #17203312; }
-    h1, h2, h3 { line-height: 1.2; color: #123b66; }
-    code { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; background: #eef2f7; padding: .1rem .3rem; border-radius: 4px; }
-    pre { overflow-x: auto; padding: 1rem; background: #101827; color: #e8eef8; border-radius: 8px; }
-    pre code { background: transparent; padding: 0; color: inherit; }
-    details { margin: 1rem 0; }
-    summary { cursor: pointer; font-weight: 700; color: #123b66; }
-    .notice { padding: 1rem; border-left: 4px solid #e18b25; background: #fff5e6; }
-    a { color: #125b91; text-underline-offset: .2em; }
-    a:focus-visible, summary:focus-visible { outline: 3px solid #e18b25; outline-offset: 4px; }
-    h2 { margin-top: 2.5rem; scroll-margin-top: 1rem; }
-    nav ul { columns: 2; padding-left: 1.25rem; }
-    .downloads { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; margin: 1.5rem 0; }
-    .launch { display: inline-block; padding: .8rem 1.1rem; border-radius: .5rem; background: #123b66; color: white; font-weight: 700; text-decoration: none; }
-    .launch:hover { background: #0b2e53; }
-    .steps { padding: 1rem 1.25rem; background: #eef5fb; border-radius: .5rem; }
-    .steps li { margin: .35rem 0; }
-    details { border-left: 3px solid #dbe2ee; padding-left: .75rem; }
-    @media (max-width: 600px) { body { padding: .5rem; } main { padding: 1rem; } nav ul { columns: 1; } }
-    @media print { body, main { background: white; padding: 0; border: 0; box-shadow: none; } pre { white-space: pre-wrap; background: #eee; color: black; } nav, .downloads { display: none; } }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <main>
-    <a href="#lesson">Skip to lesson</a>
-    <p class="notice"><strong>Work entirely in your browser.</strong> Read the lesson here, then open its runnable notebook on the public Binder service. It includes the sample IFC and COMPAS IFC package. The first launch may take several minutes; save any edited IFC or notebook before closing the temporary session.</p>
-    <div class="downloads"><a class="launch" href="https://mybinder.org/v2/gh/savino-di-noi/compas_ifc_ulb.io/main?urlpath=lab/tree/compas_ifc_compas_viewer_intro.ipynb" rel="noopener noreferrer">Open the live notebook on Binder ↗</a><a href="lesson.zip" download>Download lesson and sample IFC</a></div>
-    <ol class="steps"><li>Read the short explanations and predict each result.</li><li>Open Binder and run the matching cell with Shift + Enter.</li><li>Change the sample wall's name, save a new IFC, and download it before the session ends.</li></ol>
-    <p>The live notebook opens on mybinder.org. If the launch reports that the repository is unavailable, the course repository must be made public and the Binder image built before class.</p>
-    <nav aria-label="Lesson contents"><strong>Lesson contents</strong><ul><li><a href="#section-1">0. Why IFC and COMPAS?</a></li><li><a href="#section-2">1. Get ready</a></li><li><a href="#section-3">2. Open the building information model</a></li><li><a href="#section-4">3. Find objects by type</a></li><li><a href="#section-5">4. Read properties and location</a></li><li><a href="#section-6">5. Change one object's name</a></li><li><a href="#section-7">6. Save a new IFC and reopen it</a></li><li><a href="#section-8">7. Optional: inspect using the CLI</a></li><li><a href="#section-9">8. Practice and hand in</a></li><li><a href="#section-10">Help when a cell fails</a></li><li><a href="#section-11">References and instructor notes</a></li></ul></nav>
-    <div id="lesson">
-    <h1>IFC objects: read, understand, change, check</h1>
+    <a class="skip-link" href="#lesson">Skip to lesson</a>
+    <div class="sitebar"><a class="brand" href="#">ifc<span>.io</span></a><small>COMPAS IFC · Beginner course</small></div>
+    <header class="hero"><h1>IFC objects: read, understand, change, check</h1>
 <p>A first COMPAS IFC lesson for bachelor students. No Python experience required. Allow about 45–60 minutes.</p>
 <p><strong>Your task:</strong> explore a building, select one object, change its name in a new IFC file, and check that the change survived saving.</p>
 <p>By the end you can:</p>
 <ul><li>Explain the difference between an IFC object and its visible shape.</li><li>Select objects by type and read their identity and properties.</li><li>Make a small edit, save it, and verify the saved result.</li><li>Export a selected group of IFC objects while keeping their identity.</li></ul>
-<p><strong>On ifc.io:</strong> follow the explanations and inspect the worked example. Running real COMPAS IFC code requires the Python notebook service linked by your course. The sample IFC is included with the lesson.</p>
-<h2 id="section-1">0. Why IFC and COMPAS?</h2>
+<p><strong>On ifc.io:</strong> follow the explanations and inspect the worked example. Running real COMPAS IFC code requires the Python notebook service linked by your course. The sample IFC is included with the lesson.</p></header>
+    <section class="start" aria-labelledby="start-title">
+      <h2 id="start-title">Work in your browser</h2>
+      <p>Read the lesson here, then run the examples in the public Binder notebook. It includes the sample IFC. The first launch may take several minutes; download your edited IFC before the temporary session ends.</p>
+      <div class="downloads"><a class="launch" href="https://mybinder.org/v2/gh/savino-di-noi/compas_ifc_ulb.io/main?urlpath=lab/tree/compas_ifc_compas_viewer_intro.ipynb" rel="noopener noreferrer">Open the live notebook ↗</a><a href="lesson.zip" download>Download lesson and sample IFC</a></div>
+      <ol class="steps"><li>Read each explanation and predict the result.</li><li>Open Binder and run the matching cell with Shift + Enter.</li><li>Change the sample wall's name, save a new IFC, and download it.</li></ol>
+    </section>
+    <nav aria-label="Lesson contents"><strong>Lesson contents</strong><ul><li><a href="#section-1">0. Why IFC and COMPAS?</a></li><li><a href="#section-2">1. Get ready</a></li><li><a href="#section-3">2. Open the building information model</a></li><li><a href="#section-4">3. Find objects by type</a></li><li><a href="#section-5">4. Read properties and location</a></li><li><a href="#section-6">5. Change one object's name</a></li><li><a href="#section-7">6. Save a new IFC and reopen it</a></li><li><a href="#section-8">7. Optional: inspect using the CLI</a></li><li><a href="#section-9">8. Practice and hand in</a></li><li><a href="#section-10">Help when a cell fails</a></li><li><a href="#section-11">References and instructor notes</a></li></ul></nav>
+    <article id="lesson">
+    <h2 id="section-1">0. Why IFC and COMPAS?</h2>
 <p>IFC (Industry Foundation Classes) is a format for exchanging building information. A wall can have a shape, a name, a class, property sets, and relationships to a storey or other objects.</p>
 <p><strong>Think of an IFC object as an object card linked to a shape.</strong> <code>GlobalId</code> identifies the card; <code>Name</code> is a readable label; <code>IfcWall</code> is its class; a property set groups named values. Some fields may be absent. Two identical-looking shapes can carry different information.</p>
 <p><code>compas_ifc</code> gives Python access to building information and connects it to COMPAS geometry. Code helps repeat the same selection or change on many objects. We start with one small change so we can understand and check it.</p>
@@ -62,78 +42,78 @@
 <h3>Install COMPAS IFC</h3>
 <p>Run this cell once before the rest of the lesson. It installs <code>compas_ifc</code> and its required Python dependencies into this notebook's kernel. Installation can take a few minutes.</p>
 <p>If Jupyter asks you to restart the kernel, use <strong>Kernel → Restart Kernel</strong>, then run the notebook from this point again. On a course server that already has COMPAS IFC, this cell simply checks that the dependency is present.</p>
-<details open><summary>Code cell 1</summary><pre><code>%pip install compas_ifc</code></pre></details>
-<details open><summary>Code cell 2</summary><pre><code>from pathlib import Path
-import sys
-from importlib.metadata import version, PackageNotFoundError
+<details class="code-cell" open><summary>Python example <span>Cell 1</span></summary><pre><code>%pip install compas_ifc</code></pre></details>
+<details class="code-cell" open><summary>Python example <span>Cell 2</span></summary><pre><code><span class="tok-keyword">from</span> pathlib <span class="tok-keyword">import</span> Path
+<span class="tok-keyword">import</span> sys
+<span class="tok-keyword">from</span> importlib.metadata <span class="tok-keyword">import</span> version, PackageNotFoundError
 
-print("Python executable:", sys.executable)
-print("Python version:", sys.version.split()[0])
-for package in ["compas", "compas_ifc"]:
-    try:
+print(<span class="tok-string">"Python executable:"</span>, sys.executable)
+print(<span class="tok-string">"Python version:"</span>, sys.version.split()[<span class="tok-number">0</span>])
+<span class="tok-keyword">for</span> package <span class="tok-keyword">in</span> [<span class="tok-string">"compas"</span>, <span class="tok-string">"compas_ifc"</span>]:
+    <span class="tok-keyword">try</span>:
         print(package, version(package))
-    except PackageNotFoundError:
-        print(package, "is missing: choose the course kernel or ask your instructor.")</code></pre></details>
+    <span class="tok-keyword">except</span> PackageNotFoundError:
+        print(package, <span class="tok-string">"is missing: choose the course kernel or ask your instructor."</span>)</code></pre></details>
 <h3>Choose your file</h3>
 <p>Change the filename below. A path is a file's location; <code>Path</code> helps Python work with it. Relative paths start from the working folder printed below. Keep the quotes.</p>
 <p><strong>Expected:</strong> the full path to an existing IFC file. Fix a missing file error before continuing.</p>
-<details open><summary>Code cell 3</summary><pre><code>IFC_PATH = Path("sample_building.ifc")  # CHANGE only when using another model
-MODEL_SOURCE = "COMPAS IFC repository: data/wall-with-opening-and-window.ifc"
+<details class="code-cell" open><summary>Python example <span>Cell 3</span></summary><pre><code>IFC_PATH = Path(<span class="tok-string">"sample_building.ifc"</span>)  <span class="tok-comment"># CHANGE only when using another model</span>
+MODEL_SOURCE = <span class="tok-string">"COMPAS IFC repository: data/wall-with-opening-and-window.ifc"</span>
 
-print("Working folder:", Path.cwd())
-if not IFC_PATH.is_file():
-    raise FileNotFoundError(f"Cannot find {IFC_PATH.resolve()}. Change IFC_PATH or move the file here.")
-print("Input:", IFC_PATH.resolve())
-print("Source:", MODEL_SOURCE)</code></pre></details>
+print(<span class="tok-string">"Working folder:"</span>, Path.cwd())
+<span class="tok-keyword">if</span> <span class="tok-keyword">not</span> IFC_PATH.is_file():
+    <span class="tok-keyword">raise</span> FileNotFoundError(f"Cannot find {IFC_PATH.resolve()}. Change IFC_PATH or move the file here.")
+print(<span class="tok-string">"Input:"</span>, IFC_PATH.resolve())
+print(<span class="tok-string">"Source:"</span>, MODEL_SOURCE)</code></pre></details>
 <h2 id="section-3">2. Open the building information model</h2>
 <p><code>model</code> is our Python handle to the IFC information. Opening reads the file into memory; it does not edit the disk file.</p>
 <p>We disable geometry loading and placement rectification because our first questions concern data. Geometry export later uses a separate operation that loads what it needs.</p>
 <p><strong>Expected:</strong> the model opens. Large files may take longer. If the import fails, check the kernel and package version.</p>
-<details open><summary>Code cell 4</summary><pre><code>from compas_ifc.bim import BuildingInformationModel
+<details class="code-cell" open><summary>Python example <span>Cell 4</span></summary><pre><code><span class="tok-keyword">from</span> compas_ifc.bim <span class="tok-keyword">import</span> BuildingInformationModel
 
 model = BuildingInformationModel(
-    str(IFC_PATH), load_geometries=False, rectify_placements=False
+    str(IFC_PATH), load_geometries=<span class="tok-keyword">False</span>, rectify_placements=<span class="tok-keyword">False</span>
 )
-print("Model opened. The source file has not been saved over.")</code></pre></details>
+print(<span class="tok-string">"Model opened. The source file has not been saved over."</span>)</code></pre></details>
 <h2 id="section-4">3. Find objects by type</h2>
 <p><strong>Predict:</strong> which classes should your building contain? <code>IfcWall</code> also matches subclasses such as <code>IfcWallStandardCase</code>.</p>
 <p><code>for</code> repeats the indented instruction; <code>len(...)</code> counts a list. Zero is a useful finding, not a coding failure. Classification may differ from what a shape suggests.</p>
 <p><strong>With the included sample:</strong> expect one wall, one window, no doors, and no slabs. The wall is stored as <code>IfcWallStandardCase</code>, a subclass matched by the <code>IfcWall</code> query.</p>
-<details open><summary>Code cell 5</summary><pre><code>for ifc_type in ["IfcWall", "IfcWindow", "IfcDoor", "IfcSlab"]:
+<details class="code-cell" open><summary>Python example <span>Cell 5</span></summary><pre><code><span class="tok-keyword">for</span> ifc_type <span class="tok-keyword">in</span> [<span class="tok-string">"IfcWall"</span>, <span class="tok-string">"IfcWindow"</span>, <span class="tok-string">"IfcDoor"</span>, <span class="tok-string">"IfcSlab"</span>]:
     found = model.get_elements_by_type(ifc_type)
-    print(ifc_type, ":", len(found))</code></pre></details>
+    print(ifc_type, <span class="tok-string">":"</span>, len(found))</code></pre></details>
 <h3>Select one class</h3>
 <p>Choose a class with a nonzero count. <code>elements</code> is a list; <code>[:5]</code> previews its first five items. Selection changes nothing.</p>
 <p>If you change the class, rerun this cell and the following cells to rebuild the selection and outputs.</p>
-<details open><summary>Code cell 6</summary><pre><code>ELEMENT_TYPE = "IfcWall"  # CHANGE: IfcWall, IfcWindow, IfcDoor, or IfcSlab
+<details class="code-cell" open><summary>Python example <span>Cell 6</span></summary><pre><code>ELEMENT_TYPE = <span class="tok-string">"IfcWall"</span>  <span class="tok-comment"># CHANGE: IfcWall, IfcWindow, IfcDoor, or IfcSlab</span>
 elements = model.get_elements_by_type(ELEMENT_TYPE)
-print("Matching objects:", len(elements))
-for index, element in enumerate(elements[:5]):
+print(<span class="tok-string">"Matching objects:"</span>, len(elements))
+<span class="tok-keyword">for</span> index, element <span class="tok-keyword">in</span> enumerate(elements[:<span class="tok-number">5</span>]):
     print(index, element.ifc_type, element.name, element.global_id)</code></pre></details>
 <h3>Pick an object and read its card</h3>
 <p>Lists count from <strong>zero</strong>: <code>elements[0]</code> is the first item. Choose an index printed above. The index is temporary; <code>GlobalId</code> is the IFC identifier we use to find the object again. Names can be missing or repeated.</p>
 <p><strong>With the included sample:</strong> the wall is named <code>Wall for Test Example</code> and has GlobalId <code>3ZYW59sxj8lei475l7EhLU</code>. Its list index is <code>0</code>. Record the identifier. Why would matching by name alone be unreliable?</p>
-<details open><summary>Code cell 7</summary><pre><code>OBJECT_INDEX = 0  # CHANGE: an index from the preview
-if not elements:
-    raise ValueError("Choose a type with a nonzero count and rerun the selection.")
-if not 0 &lt;= OBJECT_INDEX &lt; len(elements):
-    raise ValueError("Choose an index within the matching list.")
+<details class="code-cell" open><summary>Python example <span>Cell 7</span></summary><pre><code>OBJECT_INDEX = <span class="tok-number">0</span>  <span class="tok-comment"># CHANGE: an index from the preview</span>
+<span class="tok-keyword">if</span> <span class="tok-keyword">not</span> elements:
+    <span class="tok-keyword">raise</span> ValueError(<span class="tok-string">"Choose a type with a nonzero count and rerun the selection."</span>)
+<span class="tok-keyword">if</span> <span class="tok-keyword">not</span> <span class="tok-number">0</span> &lt;= OBJECT_INDEX &lt; len(elements):
+    <span class="tok-keyword">raise</span> ValueError(<span class="tok-string">"Choose an index within the matching list."</span>)
 selected = elements[OBJECT_INDEX]
 SELECTED_ID = selected.global_id
-print("Type:", selected.ifc_type)
-print("Name:", selected.name)
-print("GlobalId:", SELECTED_ID)</code></pre></details>
+print(<span class="tok-string">"Type:"</span>, selected.ifc_type)
+print(<span class="tok-string">"Name:"</span>, selected.name)
+print(<span class="tok-string">"GlobalId:"</span>, SELECTED_ID)</code></pre></details>
 <h2 id="section-5">4. Read properties and location</h2>
 <p>A property set groups values authored in the model. A dictionary stores named values. <strong>Missing information is not zero or false.</strong> An authored value is not an independently verified result.</p>
 <p>The element is a COMPAS-facing wrapper. In this guided cell, <code>_ifc_entity</code> reaches its IFC-specific wrapper for properties and parent relationships. The underscore marks an implementation detail that can change between releases; we isolate that access here.</p>
 <p><strong>With the included sample:</strong> the wall has <code>Pset_WallCommon</code>, including <code>IsExternal: true</code> and <code>ThermalTransmittance: 0.24</code>; its parent is <code>Default Building Storey</code>. These are authored model values. The property output alone does not tell you the unit or prove physical performance.</p>
-<details open><summary>Code cell 8</summary><pre><code>import json
+<details class="code-cell" open><summary>Python example <span>Cell 8</span></summary><pre><code><span class="tok-keyword">import</span> json
 
 ifc_object = selected._ifc_entity
-property_sets = ifc_object.property_sets or {}
-print(json.dumps(property_sets, indent=2, default=str) if property_sets else "No property sets reported.")
+property_sets = ifc_object.property_sets <span class="tok-keyword">or</span> {}
+print(json.dumps(property_sets, indent=<span class="tok-number">2</span>, default=str) <span class="tok-keyword">if</span> property_sets <span class="tok-keyword">else</span> <span class="tok-string">"No property sets reported."</span>)
 parent = ifc_object.parent
-print("Parent:", getattr(parent, "Name", None) if parent is not None else "No parent reported")</code></pre></details>
+print(<span class="tok-string">"Parent:"</span>, getattr(parent, <span class="tok-string">"Name"</span>, <span class="tok-keyword">None</span>) <span class="tok-keyword">if</span> parent <span class="tok-keyword">is</span> <span class="tok-keyword">not</span> <span class="tok-keyword">None</span> <span class="tok-keyword">else</span> <span class="tok-string">"No parent reported"</span>)</code></pre></details>
 <h3>Check your understanding</h3>
 <ul><li>Find one property and describe its meaning. If none are present, record that finding.</li><li>Is its unit declared? What would you check before comparing files?</li><li>Does a name containing “concrete” prove the object's material?</li></ul>
 <p>Before comparing numerical properties, check units. Do not assume <code>2</code> means two metres. The optional CLI section below reports file units.</p>
@@ -141,85 +121,85 @@ print("Parent:", getattr(parent, "Name", None) if parent is not None else "No pa
 <p>We change a <strong>teaching label</strong>, not an engineering property. Reloading a fresh working model makes this step repeatable from the original. We find the same object by GlobalId.</p>
 <p>Assigning <code>.name</code> changes the working model in memory. No output IFC exists until we save.</p>
 <p><strong>Predict:</strong> should changing only the name change the object's class, identifier, or shape? With the included sample, the before name is <code>Wall for Test Example</code>; the after name is <code>Teaching example - renamed object</code>.</p>
-<details open><summary>Code cell 9</summary><pre><code>NEW_NAME = "Teaching example - renamed object"  # CHANGE
+<details class="code-cell" open><summary>Python example <span>Cell 9</span></summary><pre><code>NEW_NAME = <span class="tok-string">"Teaching example - renamed object"</span>  <span class="tok-comment"># CHANGE</span>
 working_model = BuildingInformationModel(
-    str(IFC_PATH), load_geometries=False, rectify_placements=False
+    str(IFC_PATH), load_geometries=<span class="tok-keyword">False</span>, rectify_placements=<span class="tok-keyword">False</span>
 )
 working_object = working_model.get_element_by_global_id(SELECTED_ID)
-if working_object is None:
-    raise ValueError("Selected GlobalId not found. Rerun the selection on your input file.")
+<span class="tok-keyword">if</span> working_object <span class="tok-keyword">is</span> <span class="tok-keyword">None</span>:
+    <span class="tok-keyword">raise</span> ValueError(<span class="tok-string">"Selected GlobalId not found. Rerun the selection on your input file."</span>)
 old_name = working_object.name
 working_object.name = NEW_NAME
-print("Before:", old_name)
-print("After:", working_object.name)
-print("Identifier unchanged:", working_object.global_id == SELECTED_ID)</code></pre></details>
+print(<span class="tok-string">"Before:"</span>, old_name)
+print(<span class="tok-string">"After:"</span>, working_object.name)
+print(<span class="tok-string">"Identifier unchanged:"</span>, working_object.global_id == SELECTED_ID)</code></pre></details>
 <h2 id="section-7">6. Save a new IFC and reopen it</h2>
 <p>Saving writes our working model to a <strong>new file</strong>. The guard prevents replacing an existing output. For another run, choose a new output name or deliberately remove your previous exercise output in your file manager.</p>
 <p>Reopening matters: a correct value in memory does not prove it was saved. <code>assert</code> stops if a comparison fails.</p>
 <p><strong>Expected with the sample:</strong> reopening finds <code>Teaching example - renamed object</code> under the same GlobalId <code>3ZYW59sxj8lei475l7EhLU</code>, still an <code>IfcWallStandardCase</code>. This checks this edit; it does not validate every relationship or geometry in the file.</p>
-<details open><summary>Code cell 10</summary><pre><code>OUTPUT_DIR = Path("exports")
-OUTPUT_DIR.mkdir(exist_ok=True)
-EDITED_IFC_PATH = OUTPUT_DIR / "renamed_building.ifc"  # CHANGE for another run
-if EDITED_IFC_PATH.resolve() == IFC_PATH.resolve() or EDITED_IFC_PATH.exists():
-    raise FileExistsError("Choose a new EDITED_IFC_PATH; existing IFC files are protected.")
+<details class="code-cell" open><summary>Python example <span>Cell 10</span></summary><pre><code>OUTPUT_DIR = Path(<span class="tok-string">"exports"</span>)
+OUTPUT_DIR.mkdir(exist_ok=<span class="tok-keyword">True</span>)
+EDITED_IFC_PATH = OUTPUT_DIR / <span class="tok-string">"renamed_building.ifc"</span>  <span class="tok-comment"># CHANGE for another run</span>
+<span class="tok-keyword">if</span> EDITED_IFC_PATH.resolve() == IFC_PATH.resolve() <span class="tok-keyword">or</span> EDITED_IFC_PATH.exists():
+    <span class="tok-keyword">raise</span> FileExistsError(<span class="tok-string">"Choose a new EDITED_IFC_PATH; existing IFC files are protected."</span>)
 working_model.save(str(EDITED_IFC_PATH))
 reopened = BuildingInformationModel(
-    str(EDITED_IFC_PATH), load_geometries=False, rectify_placements=False
+    str(EDITED_IFC_PATH), load_geometries=<span class="tok-keyword">False</span>, rectify_placements=<span class="tok-keyword">False</span>
 )
 checked = reopened.get_element_by_global_id(SELECTED_ID)
-assert checked is not None, "Object missing from saved file."
-assert checked.name == NEW_NAME, "Saved name differs from requested name."
-assert checked.ifc_type == selected.ifc_type, "IFC class changed."
-print("Checked name:", checked.name)
-print("Checked GlobalId:", checked.global_id)
-print("New IFC:", EDITED_IFC_PATH.resolve())</code></pre></details>
+<span class="tok-keyword">assert</span> checked <span class="tok-keyword">is</span> <span class="tok-keyword">not</span> <span class="tok-keyword">None</span>, <span class="tok-string">"Object missing from saved file."</span>
+<span class="tok-keyword">assert</span> checked.name == NEW_NAME, <span class="tok-string">"Saved name differs from requested name."</span>
+<span class="tok-keyword">assert</span> checked.ifc_type == selected.ifc_type, <span class="tok-string">"IFC class changed."</span>
+print(<span class="tok-string">"Checked name:"</span>, checked.name)
+print(<span class="tok-string">"Checked GlobalId:"</span>, checked.global_id)
+print(<span class="tok-string">"New IFC:"</span>, EDITED_IFC_PATH.resolve())</code></pre></details>
 <h3>Record your change</h3>
 <p>This JSON exercise log helps another student reproduce your work. It is not a complete model comparison or an engineering approval.</p>
-<details open><summary>Code cell 11</summary><pre><code>record = {
-    "input": str(IFC_PATH.resolve()), "source": MODEL_SOURCE,
-    "output": str(EDITED_IFC_PATH.resolve()), "global_id": SELECTED_ID,
-    "old_name": old_name, "new_name": checked.name,
-    "python": sys.version.split()[0],
-    "packages": {p: version(p) for p in ["compas", "compas_ifc"]},
-    "check": "reopened name, GlobalId lookup, and IFC class",
+<details class="code-cell" open><summary>Python example <span>Cell 11</span></summary><pre><code>record = {
+    <span class="tok-string">"input"</span>: str(IFC_PATH.resolve()), <span class="tok-string">"source"</span>: MODEL_SOURCE,
+    <span class="tok-string">"output"</span>: str(EDITED_IFC_PATH.resolve()), <span class="tok-string">"global_id"</span>: SELECTED_ID,
+    <span class="tok-string">"old_name"</span>: old_name, <span class="tok-string">"new_name"</span>: checked.name,
+    <span class="tok-string">"python"</span>: sys.version.split()[<span class="tok-number">0</span>],
+    <span class="tok-string">"packages"</span>: {p: version(p) <span class="tok-keyword">for</span> p <span class="tok-keyword">in</span> [<span class="tok-string">"compas"</span>, <span class="tok-string">"compas_ifc"</span>]},
+    <span class="tok-string">"check"</span>: <span class="tok-string">"reopened name, GlobalId lookup, and IFC class"</span>,
 }
-RECORD_PATH = EDITED_IFC_PATH.with_suffix(".lesson.json")
-RECORD_PATH.write_text(json.dumps(record, indent=2), encoding="utf-8")
-print("Exercise record:", RECORD_PATH.resolve())</code></pre></details>
+RECORD_PATH = EDITED_IFC_PATH.with_suffix(<span class="tok-string">".lesson.json"</span>)
+RECORD_PATH.write_text(json.dumps(record, indent=<span class="tok-number">2</span>), encoding=<span class="tok-string">"utf-8"</span>)
+print(<span class="tok-string">"Exercise record:"</span>, RECORD_PATH.resolve())</code></pre></details>
 <h2 id="section-8">7. Optional: inspect using the CLI</h2>
 <p>The command-line interface is another way to use the library. Read the helper without memorising it: <code>subprocess</code> runs another program with the notebook's Python; <code>--json</code> asks for structured output; <code>json.loads</code> converts that into Python values.</p>
 <p>CLI commands depend on the release. For an unknown command, ask your instructor to compare <code>python -m compas_ifc --help</code> with the lesson.</p>
 <p><strong>Expected:</strong> file schema, units, and counts; then a spatial hierarchy. Compare the hierarchy with the parent you read earlier.</p>
-<details open><summary>Code cell 12</summary><pre><code>import subprocess
+<details class="code-cell" open><summary>Python example <span>Cell 12</span></summary><pre><code><span class="tok-keyword">import</span> subprocess
 
-def run_ifc(*arguments, json_output=True):
-    command = [sys.executable, "-m", "compas_ifc", *map(str, arguments)]
-    if json_output:
-        command.append("--json")
-    result = subprocess.run(command, capture_output=True, text=True)
-    if result.returncode != 0:
-        raise RuntimeError(f"COMPAS IFC command failed:\n{result.stderr or result.stdout}")
-    if not json_output:
-        return result.stdout
-    try:
-        return json.loads(result.stdout)
-    except json.JSONDecodeError as error:
-        raise RuntimeError(f"Expected JSON. Check the CLI version/output:\n{result.stdout}") from error
+<span class="tok-keyword">def</span> run_ifc(*arguments, json_output=<span class="tok-keyword">True</span>):
+    command = [sys.executable, <span class="tok-string">"-m"</span>, <span class="tok-string">"compas_ifc"</span>, *map(str, arguments)]
+    <span class="tok-keyword">if</span> json_output:
+        command.append(<span class="tok-string">"--json"</span>)
+    result = subprocess.run(command, capture_output=<span class="tok-keyword">True</span>, text=<span class="tok-keyword">True</span>)
+    <span class="tok-keyword">if</span> result.returncode != <span class="tok-number">0</span>:
+        <span class="tok-keyword">raise</span> RuntimeError(f"COMPAS IFC command failed:\n{result.stderr <span class="tok-keyword">or</span> result.stdout}")
+    <span class="tok-keyword">if</span> <span class="tok-keyword">not</span> json_output:
+        <span class="tok-keyword">return</span> result.stdout
+    <span class="tok-keyword">try</span>:
+        <span class="tok-keyword">return</span> json.loads(result.stdout)
+    <span class="tok-keyword">except</span> json.JSONDecodeError <span class="tok-keyword">as</span> error:
+        <span class="tok-keyword">raise</span> RuntimeError(f"Expected JSON. Check the CLI version/output:\n{result.stdout}") <span class="tok-keyword">from</span> error
 
-print(json.dumps(run_ifc("info", IFC_PATH), indent=2))</code></pre></details>
-<details open><summary>Code cell 13</summary><pre><code>print(json.dumps(run_ifc("tree", IFC_PATH, "--depth", 3), indent=2))</code></pre></details>
+print(json.dumps(run_ifc(<span class="tok-string">"info"</span>, IFC_PATH), indent=<span class="tok-number">2</span>))</code></pre></details>
+<details class="code-cell" open><summary>Python example <span>Cell 13</span></summary><pre><code>print(json.dumps(run_ifc(<span class="tok-string">"tree"</span>, IFC_PATH, <span class="tok-string">"--depth"</span>, <span class="tok-number">3</span>), indent=<span class="tok-number">2</span>))</code></pre></details>
 <h3>Export the selected class as IFC</h3>
 <p>This exports the selected class from the <strong>original</strong> file, so your name edit is absent. Use <code>EDITED_IFC_PATH</code> as the input if you want that edit included.</p>
 <p>By default, <code>export-ifc</code> retains the selection's spatial ancestors and linked information. A subset is not the whole building. Reopen it and compare selected GlobalIds; additional spatial objects are expected.</p>
 <p><strong>Expected:</strong> matching selected-class identifiers. This is a focused identity check, not complete validation of geometry, materials, or relationships.</p>
-<details open><summary>Code cell 14</summary><pre><code>SUBSET_PATH = OUTPUT_DIR / f"{ELEMENT_TYPE.lower()}_subset.ifc"
-if SUBSET_PATH.exists() or SUBSET_PATH.resolve() == IFC_PATH.resolve():
-    raise FileExistsError("Choose a new SUBSET_PATH before exporting again.")
-print(run_ifc("export-ifc", IFC_PATH, "--type", ELEMENT_TYPE, "--out", SUBSET_PATH, json_output=False))
-subset = BuildingInformationModel(str(SUBSET_PATH), load_geometries=False, rectify_placements=False)
+<details class="code-cell" open><summary>Python example <span>Cell 14</span></summary><pre><code>SUBSET_PATH = OUTPUT_DIR / f"{ELEMENT_TYPE.lower()}_subset.ifc"
+<span class="tok-keyword">if</span> SUBSET_PATH.exists() <span class="tok-keyword">or</span> SUBSET_PATH.resolve() == IFC_PATH.resolve():
+    <span class="tok-keyword">raise</span> FileExistsError(<span class="tok-string">"Choose a new SUBSET_PATH before exporting again."</span>)
+print(run_ifc(<span class="tok-string">"export-ifc"</span>, IFC_PATH, <span class="tok-string">"--type"</span>, ELEMENT_TYPE, <span class="tok-string">"--out"</span>, SUBSET_PATH, json_output=<span class="tok-keyword">False</span>))
+subset = BuildingInformationModel(str(SUBSET_PATH), load_geometries=<span class="tok-keyword">False</span>, rectify_placements=<span class="tok-keyword">False</span>)
 subset_elements = subset.get_elements_by_type(ELEMENT_TYPE)
-assert {e.global_id for e in subset_elements} == {e.global_id for e in elements}
-print("Checked selected-class IDs:", len(subset_elements))</code></pre></details>
+<span class="tok-keyword">assert</span> {e.global_id <span class="tok-keyword">for</span> e <span class="tok-keyword">in</span> subset_elements} == {e.global_id <span class="tok-keyword">for</span> e <span class="tok-keyword">in</span> elements}
+print(<span class="tok-string">"Checked selected-class IDs:"</span>, len(subset_elements))</code></pre></details>
 <h2 id="section-9">8. Practice and hand in</h2>
 <ul><li>Select another class. Record its count and one GlobalId. Explain why class matters even when shapes look alike.</li><li>Rename another object, save to a different filename, and reopen it. Hand in the exercise record and new IFC if sharing is permitted.</li><li>Explain the difference between selecting, editing in memory, and saving. Which makes a persistent change?</li><li>Optional: export windows instead of walls and check which GlobalId appears in the smaller IFC.</li></ul>
 <p><strong>Self-check:</strong> a name edit keeps identifier and class; selection changes nothing; saving makes the edit persistent; reopening checks persistence; a subset contains selected objects plus needed context.</p>
@@ -232,7 +212,8 @@ print("Checked selected-class IDs:", len(subset_elements))</code></pre></details
 <ul><li><a href="https://github.com/compas-dev/compas_ifc">COMPAS IFC source and examples</a></li><li><a href="https://compas.dev/compas_ifc/2.1.0/api/generated/compas_ifc.bim.BuildingInformationModel.html">BuildingInformationModel API</a></li><li><a href="https://compas.dev/compas_ifc/latest/cli.html">Command-line interface</a></li></ul>
 <p>The lesson, including the optional IFC subset export, was run on the included sample using Python 3.12.13, COMPAS 2.15.1, and <code>compas_ifc</code> 2.1.0 on Windows. The public Binder launch still needs a live check after the course repository is public.</p>
 <p>Suggested timing: 10 minutes on concepts and controls, 15 on selection and properties, 20 on the checked edit, and 10 on discussion or the optional subset export. Students use the course website and Binder in their browser.</p>
-    </div>
+    </article>
+    <footer class="footer">ifc.io · An introduction to working with IFC objects using COMPAS IFC</footer>
   </main>
 </body>
 </html>

@@ -6,6 +6,7 @@ on:
     paths:
       - "compas_ifc_compas_viewer_intro.ipynb"
       - "build_site.py"
+      - "style.css"
       - "viewer_detached.py"
       - "README.md"
       - "sample_building.ifc"
