@@ -135,8 +135,8 @@ pre {
   tab-size: 4;
 }
 pre code { background: none; color: inherit; padding: 0; font-size: inherit; }
-.tok-string { color: #7b3151; }
-.tok-number, .tok-keyword { color: #155d7e; }
+.tok-string { color: #f95793; }
+.tok-number, .tok-keyword { color: #1c8ec4; }
 .tok-keyword { font-weight: 650; }
 .tok-comment { color: var(--emphasis-medium); }
 .start {

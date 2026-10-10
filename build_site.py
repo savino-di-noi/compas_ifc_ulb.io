@@ -7,6 +7,7 @@ or interpret raw HTML from notebook content.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import keyword
 import re
@@ -22,6 +23,7 @@ from urllib.parse import quote
 ROOT = Path(__file__).resolve().parent
 OUTPUT_PATH = ROOT / "site" / "index.html"
 BINDER_BASE = "https://mybinder.org/v2/gh/savino-di-noi/compas_ifc_ulb.io/main?urlpath=lab/tree/"
+STYLE_VERSION = hashlib.sha256((ROOT / "style.css").read_bytes()).hexdigest()[:12]
 
 
 def binder_url(filename: str) -> str:
@@ -204,7 +206,7 @@ def render_notebook(notebook: dict, filename: str, exercises: list[dict], is_int
   <meta name="referrer" content="no-referrer">
   <meta name="description" content="A beginner browser course for exploring, editing, viewing, and checking IFC objects with COMPAS IFC.">
   <title>ifc.io — Learn to work with IFC objects</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v={STYLE_VERSION}">
 </head>
 <body>
   <main>
