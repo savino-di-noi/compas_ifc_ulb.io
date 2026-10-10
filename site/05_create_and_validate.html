@@ -12,11 +12,22 @@
 <body>
   <main>
     <a class="skip-link" href="#lesson">Skip to lesson</a>
-    <div class="sitebar"><a class="brand" href="index.html">ifc<span>.io</span></a><small>COMPAS IFC · Beginner course</small></div>
+    <div class="sitebar">
+      <a class="brand" href="index.html"><span class="brand-name">ifc<span>.io</span></span><small>Learn IFC in your browser</small></a>
+      <a class="association" href="https://compas.dev/" rel="noopener noreferrer" aria-label="Visit the COMPAS Association website">
+        <img src="assets/compas_default.svg" alt="COMPAS logo" width="251" height="52">
+        <span>COMPAS Association</span>
+      </a>
+    </div>
     <p class="back-link"><a href="index.html">← Course introduction and all exercises</a></p>
     <header class="hero"><h1>Exercise 5 — Create and validate (optional)</h1>
 <p><strong>Goal:</strong> create an IFC object and check whether it contains a required piece of information. Allow 20 minutes. This is a small independent model, so it does not change the supplied sample.</p>
-<p>An information check asks whether a required value is present and has the expected form. It does <strong>not</strong> verify the physical or structural performance of the object.</p></header>
+<p>An information check asks whether a required value is present and has the expected form. It does <strong>not</strong> verify the physical or structural performance of the object.</p>
+      <div class="library-credit" aria-label="COMPAS IFC library attribution">
+        <div><span class="credit-label">Open-source library</span><strong><a href="https://compas.dev/compas_ifc/latest/" rel="noopener noreferrer">COMPAS IFC</a></strong></div>
+        <div><span class="credit-label">Library author</span><strong><a href="https://github.com/compas-dev/compas_ifc/blob/main/CITATION.cff" rel="noopener noreferrer">Li Chen</a></strong></div>
+      </div>
+    </header>
     <section class="start" aria-labelledby="start-title">
       <h2 id="start-title">Run this exercise in Binder</h2>
       <p>Read this exercise here or open its editable notebook in Binder. Run cells from top to bottom with Shift + Enter. Binder already includes the course packages.</p>
@@ -61,7 +72,7 @@ print(wall.properties)</code></pre></details>
 <ul><li>Remove <code>CourseInfo</code> from the <code>create_wall</code> cell, rerun from the template, and compare the validation result.</li><li>Restore the property set and explain what changed.</li><li>What could still be wrong with a wall even when this one information rule passes?</li></ul>
 <p><a href="https://compas.dev/compas_ifc/latest/tutorials/03_validation.html">Upstream validation tutorial</a>.</p>
     </article>
-    <footer class="footer">ifc.io · An introduction to working with IFC objects using COMPAS IFC</footer>
+    <footer class="footer">An independent teaching course using <a href="https://compas.dev/compas_ifc/latest/">COMPAS IFC</a>, authored by Li Chen and Tom Van Mele, in the <a href="https://compas.dev/">COMPAS Association</a> ecosystem. <a href="https://github.com/compas-dev/compas-graphics">COMPAS logo source</a>.</footer>
   </main>
 </body>
 </html>

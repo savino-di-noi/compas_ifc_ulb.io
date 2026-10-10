@@ -12,11 +12,22 @@
 <body>
   <main>
     <a class="skip-link" href="#lesson">Skip to lesson</a>
-    <div class="sitebar"><a class="brand" href="index.html">ifc<span>.io</span></a><small>COMPAS IFC · Beginner course</small></div>
+    <div class="sitebar">
+      <a class="brand" href="index.html"><span class="brand-name">ifc<span>.io</span></span><small>Learn IFC in your browser</small></a>
+      <a class="association" href="https://compas.dev/" rel="noopener noreferrer" aria-label="Visit the COMPAS Association website">
+        <img src="assets/compas_default.svg" alt="COMPAS logo" width="251" height="52">
+        <span>COMPAS Association</span>
+      </a>
+    </div>
     <p class="back-link"><a href="index.html">← Course introduction and all exercises</a></p>
     <header class="hero"><h1>Exercise 4 — Clashes and relationships</h1>
 <p><strong>Goal:</strong> distinguish declared relationships from geometric overlap. Allow 20–25 minutes. A <em>clash</em> here means a detected volumetric intersection; it does not automatically mean a construction error. Run the cells in order.</p>
-<p>The bundled wall-and-window sample normally reports zero clashes. We then create two deliberately overlapping walls so you can see a positive result even before your instructor adds a larger example.</p></header>
+<p>The bundled wall-and-window sample normally reports zero clashes. We then create two deliberately overlapping walls so you can see a positive result even before your instructor adds a larger example.</p>
+      <div class="library-credit" aria-label="COMPAS IFC library attribution">
+        <div><span class="credit-label">Open-source library</span><strong><a href="https://compas.dev/compas_ifc/latest/" rel="noopener noreferrer">COMPAS IFC</a></strong></div>
+        <div><span class="credit-label">Library author</span><strong><a href="https://github.com/compas-dev/compas_ifc/blob/main/CITATION.cff" rel="noopener noreferrer">Li Chen</a></strong></div>
+      </div>
+    </header>
     <section class="start" aria-labelledby="start-title">
       <h2 id="start-title">Run this exercise in Binder</h2>
       <p>Read this exercise here or open its editable notebook in Binder. Run cells from top to bottom with Shift + Enter. Binder already includes the course packages.</p>
@@ -76,7 +87,7 @@ viewer.show()</code></pre></details>
 <ul><li>Move Wall B further away by changing <code>(1, 0.1, 0.2)</code> to <code>(10, 0.1, 0.2)</code>. Rerun from <strong>Make a known overlap</strong>. What changes?</li><li>Restore the overlap. Why is one detected pair not enough to decide whether a real design is acceptable?</li><li>When your instructor supplies a larger IFC, change <code>IFC_PATH</code> and repeat the source scan. It may take longer. Record the model's units and which element classes were considered.</li></ul>
 <p><a href="https://compas.dev/compas_ifc/latest/tutorials/04_interactions.html">Upstream interactions tutorial</a>.</p>
     </article>
-    <footer class="footer">ifc.io · An introduction to working with IFC objects using COMPAS IFC</footer>
+    <footer class="footer">An independent teaching course using <a href="https://compas.dev/compas_ifc/latest/">COMPAS IFC</a>, authored by Li Chen and Tom Van Mele, in the <a href="https://compas.dev/">COMPAS Association</a> ecosystem. <a href="https://github.com/compas-dev/compas-graphics">COMPAS logo source</a>.</footer>
   </main>
 </body>
 </html>

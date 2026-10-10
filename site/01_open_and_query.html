@@ -12,11 +12,22 @@
 <body>
   <main>
     <a class="skip-link" href="#lesson">Skip to lesson</a>
-    <div class="sitebar"><a class="brand" href="index.html">ifc<span>.io</span></a><small>COMPAS IFC · Beginner course</small></div>
+    <div class="sitebar">
+      <a class="brand" href="index.html"><span class="brand-name">ifc<span>.io</span></span><small>Learn IFC in your browser</small></a>
+      <a class="association" href="https://compas.dev/" rel="noopener noreferrer" aria-label="Visit the COMPAS Association website">
+        <img src="assets/compas_default.svg" alt="COMPAS logo" width="251" height="52">
+        <span>COMPAS Association</span>
+      </a>
+    </div>
     <p class="back-link"><a href="index.html">← Course introduction and all exercises</a></p>
     <header class="hero"><h1>Exercise 1 — Open and query an IFC model</h1>
 <p><strong>Goal:</strong> answer “What is in this file?” using <code>BuildingInformationModel</code>, its spatial tree, and element queries. Allow 20–25 minutes. Run cells in order with <strong>Shift + Enter</strong>. Binder already has <code>compas_ifc</code> installed.</p>
-<p>This exercise starts with the larger Duplex model so searches return more than one object. It has four storeys. A count of zero is still a useful finding, not an error. Set <code>IFC_PATH</code> to <code>sample_building.ifc</code> to compare it with the tiny sample.</p></header>
+<p>This exercise starts with the larger Duplex model so searches return more than one object. It has four storeys. A count of zero is still a useful finding, not an error. Set <code>IFC_PATH</code> to <code>sample_building.ifc</code> to compare it with the tiny sample.</p>
+      <div class="library-credit" aria-label="COMPAS IFC library attribution">
+        <div><span class="credit-label">Open-source library</span><strong><a href="https://compas.dev/compas_ifc/latest/" rel="noopener noreferrer">COMPAS IFC</a></strong></div>
+        <div><span class="credit-label">Library author</span><strong><a href="https://github.com/compas-dev/compas_ifc/blob/main/CITATION.cff" rel="noopener noreferrer">Li Chen</a></strong></div>
+      </div>
+    </header>
     <section class="start" aria-labelledby="start-title">
       <h2 id="start-title">Run this exercise in Binder</h2>
       <p>Read this exercise here or open its editable notebook in Binder. Run cells from top to bottom with Shift + Enter. Binder already includes the course packages.</p>
@@ -74,7 +85,7 @@ print(<span class="tok-string">"LoadBearing:"</span>, wall_common.get(<span clas
 <ol><li>Change <code>TYPE_TO_EXPLORE</code> to <code>IfcWindow</code> and rerun from that cell. Record its Name, GlobalId, and parent.</li><li>Which values describe identity, which describe a relationship, and which are authored properties?</li><li>If your larger model has many walls, show only the first five. Explain why a class search is easier than reading every entity.</li></ol>
 <p><strong>Checkpoint:</strong> another student should be able to find the same object using the GlobalId you recorded. <a href="https://compas.dev/compas_ifc/latest/tutorials/01_open_a_model.html">API reference</a>.</p>
     </article>
-    <footer class="footer">ifc.io · An introduction to working with IFC objects using COMPAS IFC</footer>
+    <footer class="footer">An independent teaching course using <a href="https://compas.dev/compas_ifc/latest/">COMPAS IFC</a>, authored by Li Chen and Tom Van Mele, in the <a href="https://compas.dev/">COMPAS Association</a> ecosystem. <a href="https://github.com/compas-dev/compas-graphics">COMPAS logo source</a>.</footer>
   </main>
 </body>
 </html>

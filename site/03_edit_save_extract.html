@@ -12,11 +12,22 @@
 <body>
   <main>
     <a class="skip-link" href="#lesson">Skip to lesson</a>
-    <div class="sitebar"><a class="brand" href="index.html">ifc<span>.io</span></a><small>COMPAS IFC · Beginner course</small></div>
+    <div class="sitebar">
+      <a class="brand" href="index.html"><span class="brand-name">ifc<span>.io</span></span><small>Learn IFC in your browser</small></a>
+      <a class="association" href="https://compas.dev/" rel="noopener noreferrer" aria-label="Visit the COMPAS Association website">
+        <img src="assets/compas_default.svg" alt="COMPAS logo" width="251" height="52">
+        <span>COMPAS Association</span>
+      </a>
+    </div>
     <p class="back-link"><a href="index.html">← Course introduction and all exercises</a></p>
     <header class="hero"><h1>Exercise 3 — Edit, save, and extract</h1>
 <p><strong>Goal:</strong> make a small information change safely, write a <strong>new</strong> IFC file, and verify it by reopening. Allow 20–25 minutes. We change a teaching label, not a material or engineering property.</p>
-<p>Every run starts from the original sample. New files appear in <code>exports/</code> in Binder; download them before the temporary session ends.</p></header>
+<p>Every run starts from the original sample. New files appear in <code>exports/</code> in Binder; download them before the temporary session ends.</p>
+      <div class="library-credit" aria-label="COMPAS IFC library attribution">
+        <div><span class="credit-label">Open-source library</span><strong><a href="https://compas.dev/compas_ifc/latest/" rel="noopener noreferrer">COMPAS IFC</a></strong></div>
+        <div><span class="credit-label">Library author</span><strong><a href="https://github.com/compas-dev/compas_ifc/blob/main/CITATION.cff" rel="noopener noreferrer">Li Chen</a></strong></div>
+      </div>
+    </header>
     <section class="start" aria-labelledby="start-title">
       <h2 id="start-title">Run this exercise in Binder</h2>
       <p>Read this exercise here or open its editable notebook in Binder. Run cells from top to bottom with Shift + Enter. Binder already includes the course packages.</p>
@@ -75,7 +86,7 @@ print(<span class="tok-string">"Renamed object in subset:"</span>, subset_check.
 <ol><li>Change <code>NEW_NAME</code>, rerun from the first cell, and verify the new file. Explain why you must rerun from the first cell.</li><li>Find your two output files in Binder's file browser and download them.</li><li>Compare source, edited, and subset files: which share the wall's GlobalId? Which contain your new Name?</li></ol>
 <p><strong>Check:</strong> saving a file is not the same as validating an engineering model. This exercise verifies one identity and one label. <a href="https://compas.dev/compas_ifc/latest/tutorials/05_granular_export.html">Upstream granular export tutorial</a>.</p>
     </article>
-    <footer class="footer">ifc.io · An introduction to working with IFC objects using COMPAS IFC</footer>
+    <footer class="footer">An independent teaching course using <a href="https://compas.dev/compas_ifc/latest/">COMPAS IFC</a>, authored by Li Chen and Tom Van Mele, in the <a href="https://compas.dev/">COMPAS Association</a> ecosystem. <a href="https://github.com/compas-dev/compas-graphics">COMPAS logo source</a>.</footer>
   </main>
 </body>
 </html>

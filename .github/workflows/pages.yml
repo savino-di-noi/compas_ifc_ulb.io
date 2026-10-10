@@ -9,6 +9,7 @@ on:
       - "course.json"
       - "build_site.py"
       - "style.css"
+      - "assets/compas_default.svg"
       - "viewer_detached.py"
       - "README.md"
       - "*.ifc"

@@ -4,6 +4,12 @@ This course introduces bachelor students to IFC objects and the Python library
 `compas_ifc`. Students read the public [course website](https://savino-di-noi.github.io/compas_ifc_ulb.io/)
 and run the notebooks in Binder. They do not need Python on their own computers.
 
+The course uses [COMPAS IFC](https://compas.dev/compas_ifc/latest/), whose
+[software citation](https://github.com/compas-dev/compas_ifc/blob/main/CITATION.cff)
+names Li Chen and Tom Van Mele as authors. Li Chen's doctoral research is the
+project's stated provenance. The [COMPAS Association](https://compas.dev/)
+logo is reproduced unchanged from its [official graphics repository](https://github.com/compas-dev/compas-graphics).
+
 Start with `compas_ifc_compas_viewer_intro.ipynb` (what IFC is, why it matters,
 what COMPAS IFC does, and how to use Binder). The five independent exercises are:
 

@@ -209,8 +209,19 @@ def render_notebook(notebook: dict, filename: str, exercises: list[dict], is_int
 <body>
   <main>
     <a class="skip-link" href="#lesson">Skip to lesson</a>
-    <div class="sitebar"><a class="brand" href="index.html">ifc<span>.io</span></a><small>COMPAS IFC · Beginner course</small></div>
-{back_link}    <header class="hero">{introduction}</header>
+    <div class="sitebar">
+      <a class="brand" href="index.html"><span class="brand-name">ifc<span>.io</span></span><small>Learn IFC in your browser</small></a>
+      <a class="association" href="https://compas.dev/" rel="noopener noreferrer" aria-label="Visit the COMPAS Association website">
+        <img src="assets/compas_default.svg" alt="COMPAS logo" width="251" height="52">
+        <span>COMPAS Association</span>
+      </a>
+    </div>
+{back_link}    <header class="hero">{introduction}
+      <div class="library-credit" aria-label="COMPAS IFC library attribution">
+        <div><span class="credit-label">Open-source library</span><strong><a href="https://compas.dev/compas_ifc/latest/" rel="noopener noreferrer">COMPAS IFC</a></strong></div>
+        <div><span class="credit-label">Library author</span><strong><a href="https://github.com/compas-dev/compas_ifc/blob/main/CITATION.cff" rel="noopener noreferrer">Li Chen</a></strong></div>
+      </div>
+    </header>
     <section class="start" aria-labelledby="start-title">
       <h2 id="start-title">{start_title}</h2>
       <p>{start_text}</p>
@@ -221,7 +232,7 @@ def render_notebook(notebook: dict, filename: str, exercises: list[dict], is_int
     <article id="lesson">
     {body}
     </article>
-    <footer class="footer">ifc.io · An introduction to working with IFC objects using COMPAS IFC</footer>
+    <footer class="footer">An independent teaching course using <a href="https://compas.dev/compas_ifc/latest/">COMPAS IFC</a>, authored by Li Chen and Tom Van Mele, in the <a href="https://compas.dev/">COMPAS Association</a> ecosystem. <a href="https://github.com/compas-dev/compas-graphics">COMPAS logo source</a>.</footer>
   </main>
 </body>
 </html>
@@ -243,6 +254,8 @@ def main() -> None:
             stream.write(render_notebook(notebook, filename, exercises, number == 0))
         shutil.copy2(notebook_path, OUTPUT_PATH.parent / filename)
     shutil.copy2(ROOT / "style.css", OUTPUT_PATH.parent / "style.css")
+    (OUTPUT_PATH.parent / "assets").mkdir(exist_ok=True)
+    shutil.copy2(ROOT / "assets" / "compas_default.svg", OUTPUT_PATH.parent / "assets" / "compas_default.svg")
     downloads = [*(ROOT / filename for filename in filenames), *(ROOT / filename for filename in course["models"]), ROOT / "README.md"]
     for path in downloads:
         if path.suffix != ".ipynb":
