@@ -5,7 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src 'self' data:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
   <meta name="referrer" content="no-referrer">
-  <title>Learn compas_ifc and compas_viewer</title>
+  <meta name="description" content="A beginner lesson: read IFC objects, edit a name, save and verify with COMPAS IFC.">
+  <title>ifc.io — Learn to work with IFC objects</title>
   <style>
     :root { color-scheme: light; font-family: system-ui, sans-serif; }
     body { margin: 0 auto; max-width: 980px; padding: 2rem 1.25rem 5rem; color: #172033; background: #f7f9fc; line-height: 1.55; }
@@ -17,148 +18,221 @@
     details { margin: 1rem 0; }
     summary { cursor: pointer; font-weight: 700; color: #123b66; }
     .notice { padding: 1rem; border-left: 4px solid #e18b25; background: #fff5e6; }
+    a { color: #125b91; text-underline-offset: .2em; }
+    a:focus-visible, summary:focus-visible { outline: 3px solid #e18b25; outline-offset: 4px; }
+    h2 { margin-top: 2.5rem; scroll-margin-top: 1rem; }
+    nav ul { columns: 2; padding-left: 1.25rem; }
+    .downloads { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; margin: 1.5rem 0; }
+    .launch { display: inline-block; padding: .8rem 1.1rem; border-radius: .5rem; background: #123b66; color: white; font-weight: 700; text-decoration: none; }
+    .launch:hover { background: #0b2e53; }
+    .steps { padding: 1rem 1.25rem; background: #eef5fb; border-radius: .5rem; }
+    .steps li { margin: .35rem 0; }
+    details { border-left: 3px solid #dbe2ee; padding-left: .75rem; }
+    @media (max-width: 600px) { body { padding: .5rem; } main { padding: 1rem; } nav ul { columns: 1; } }
+    @media print { body, main { background: white; padding: 0; border: 0; box-shadow: none; } pre { white-space: pre-wrap; background: #eee; color: black; } nav, .downloads { display: none; } }
   </style>
 </head>
 <body>
   <main>
-    <p class="notice"><strong>Static reading version:</strong> this GitHub Pages site displays the lesson and code but does not execute Python, install packages, accept IFC uploads, or open a viewer window. Use a controlled Jupyter environment for execution.</p>
-    <h1>Learn <code>compas_ifc</code> and <code>compas_viewer</code></h1>
-<p>In this lesson we will inspect an IFC model, query its elements, export a filtered geometry selection, and open that geometry in <code>compas_viewer</code>.</p>
-<p>The notebook is intentionally split into two ideas: <strong>IFC meaning and data</strong> come from <code>compas_ifc</code>; <strong>interactive geometry inspection</strong> comes from COMPAS and <code>compas_viewer</code>.</p>
-<h2>0. Install the lesson dependencies</h2>
-<p>Run the next cell once in the Jupyter environment used for this lesson. It installs the current COMPAS 2.x-oriented packages used below. If your course environment is already managed, skip the cell and verify the imports in the environment-check cell.</p>
-<ul><li><code>compas_ifc</code> — read, query, and export IFC models</li><li><code>compas</code> — COMPAS geometry and datastructures</li><li><code>compas_viewer</code> — desktop visualization</li><li><code>jupyter</code> — notebook runtime</li></ul>
-<details open><summary>Code cell 1</summary><pre><code>%pip install compas_ifc compas compas_viewer jupyter</code></pre></details>
-<h2>1. Choose an IFC file</h2>
-<p>Put <code>building.ifc</code> beside this notebook, or change <code>IFC_PATH</code>. The notebook does not download or create a model for you: students should work with a known IFC file and record where it came from.</p>
+    <a href="#lesson">Skip to lesson</a>
+    <p class="notice"><strong>Work entirely in your browser.</strong> Read the lesson here, then open its runnable notebook on the public Binder service. It includes the sample IFC and COMPAS IFC package. The first launch may take several minutes; save any edited IFC or notebook before closing the temporary session.</p>
+    <div class="downloads"><a class="launch" href="https://mybinder.org/v2/gh/savino-di-noi/compas_ifc_ulb.io/main?urlpath=lab/tree/compas_ifc_compas_viewer_intro.ipynb" rel="noopener noreferrer">Open the live notebook on Binder ↗</a><a href="lesson.zip" download>Download lesson and sample IFC</a></div>
+    <ol class="steps"><li>Read the short explanations and predict each result.</li><li>Open Binder and run the matching cell with Shift + Enter.</li><li>Change the sample wall's name, save a new IFC, and download it before the session ends.</li></ol>
+    <p>The live notebook opens on mybinder.org. If the launch reports that the repository is unavailable, the course repository must be made public and the Binder image built before class.</p>
+    <nav aria-label="Lesson contents"><strong>Lesson contents</strong><ul><li><a href="#section-1">0. Why IFC and COMPAS?</a></li><li><a href="#section-2">1. Get ready</a></li><li><a href="#section-3">2. Open the building information model</a></li><li><a href="#section-4">3. Find objects by type</a></li><li><a href="#section-5">4. Read properties and location</a></li><li><a href="#section-6">5. Change one object's name</a></li><li><a href="#section-7">6. Save a new IFC and reopen it</a></li><li><a href="#section-8">7. Optional: inspect using the CLI</a></li><li><a href="#section-9">8. Practice and hand in</a></li><li><a href="#section-10">Help when a cell fails</a></li><li><a href="#section-11">References and instructor notes</a></li></ul></nav>
+    <div id="lesson">
+    <h1>IFC objects: read, understand, change, check</h1>
+<p>A first COMPAS IFC lesson for bachelor students. No Python experience required. Allow about 45–60 minutes.</p>
+<p><strong>Your task:</strong> explore a building, select one object, change its name in a new IFC file, and check that the change survived saving.</p>
+<p>By the end you can:</p>
+<ul><li>Explain the difference between an IFC object and its visible shape.</li><li>Select objects by type and read their identity and properties.</li><li>Make a small edit, save it, and verify the saved result.</li><li>Export a selected group of IFC objects while keeping their identity.</li></ul>
+<p><strong>On ifc.io:</strong> follow the explanations and inspect the worked example. Running real COMPAS IFC code requires the Python notebook service linked by your course. The sample IFC is included with the lesson.</p>
+<h2 id="section-1">0. Why IFC and COMPAS?</h2>
+<p>IFC (Industry Foundation Classes) is a format for exchanging building information. A wall can have a shape, a name, a class, property sets, and relationships to a storey or other objects.</p>
+<p><strong>Think of an IFC object as an object card linked to a shape.</strong> <code>GlobalId</code> identifies the card; <code>Name</code> is a readable label; <code>IfcWall</code> is its class; a property set groups named values. Some fields may be absent. Two identical-looking shapes can carry different information.</p>
+<p><code>compas_ifc</code> gives Python access to building information and connects it to COMPAS geometry. Code helps repeat the same selection or change on many objects. We start with one small change so we can understand and check it.</p>
+<p>Our journey: <strong>IFC file → model in memory → selection → edit → new IFC file → reopen and check</strong>. An optional final step exports a smaller IFC selection.</p>
+<p><strong>Predict:</strong> Would changing a wall's colour in a viewer necessarily change its fire-rating property? Explain why.</p>
+<h2 id="section-2">1. Get ready</h2>
+<p>This lesson includes <code>sample_building.ifc</code>, a small wall and window model from the COMPAS IFC repository. Use it for your first run. Later, your instructor may provide a course model.</p>
+<ul><li>The sample IFC and notebook should be in the same folder in the hosted notebook service.</li><li>Open the hosted notebook from the course website and choose its Python kernel. You do not need to install Python on your own computer.</li><li>Run the installation cell below once. <code>%pip</code> installs into the current notebook kernel, so it is simpler and safer than copying a command into another terminal.</li><li>Click a code cell and press <strong>Shift + Enter</strong> to run it. Run from top to bottom. Text cells explain; code cells perform operations.</li></ul>
+<p><strong>Instructor:</strong> the website links to a public Binder notebook with this sample and its Python dependencies. Test the Binder launch before class. Older tutorials using <code>compas_ifc.model.Model</code> describe a different API.</p>
+<p><strong>Tiny Python guide:</strong> <code>=</code> stores a value under a name; quotes enclose text; <code>#</code> starts a comment; <code>object.name</code> accesses a field; <code>function(...)</code> calls an operation. Indentation groups instructions. Initially change only settings marked <code>CHANGE</code>.</p>
+<p>Cells remember variables until the kernel restarts. Editing code does nothing until you run it. If results seem inconsistent, restart the kernel and run the lesson from the top. Binder sessions are temporary: download your edited IFC before closing the browser tab.</p>
+<h3>Install COMPAS IFC</h3>
+<p>Run this cell once before the rest of the lesson. It installs <code>compas_ifc</code> and its required Python dependencies into this notebook's kernel. Installation can take a few minutes.</p>
+<p>If Jupyter asks you to restart the kernel, use <strong>Kernel → Restart Kernel</strong>, then run the notebook from this point again. On a course server that already has COMPAS IFC, this cell simply checks that the dependency is present.</p>
+<details open><summary>Code cell 1</summary><pre><code>%pip install compas_ifc</code></pre></details>
 <details open><summary>Code cell 2</summary><pre><code>from pathlib import Path
-import json
-import subprocess
 import sys
+from importlib.metadata import version, PackageNotFoundError
 
-IFC_PATH = Path("building.ifc")
-OUTPUT_DIR = Path("exports")
+print("Python executable:", sys.executable)
+print("Python version:", sys.version.split()[0])
+for package in ["compas", "compas_ifc"]:
+    try:
+        print(package, version(package))
+    except PackageNotFoundError:
+        print(package, "is missing: choose the course kernel or ask your instructor.")</code></pre></details>
+<h3>Choose your file</h3>
+<p>Change the filename below. A path is a file's location; <code>Path</code> helps Python work with it. Relative paths start from the working folder printed below. Keep the quotes.</p>
+<p><strong>Expected:</strong> the full path to an existing IFC file. Fix a missing file error before continuing.</p>
+<details open><summary>Code cell 3</summary><pre><code>IFC_PATH = Path("sample_building.ifc")  # CHANGE only when using another model
+MODEL_SOURCE = "COMPAS IFC repository: data/wall-with-opening-and-window.ifc"
+
+print("Working folder:", Path.cwd())
+if not IFC_PATH.is_file():
+    raise FileNotFoundError(f"Cannot find {IFC_PATH.resolve()}. Change IFC_PATH or move the file here.")
+print("Input:", IFC_PATH.resolve())
+print("Source:", MODEL_SOURCE)</code></pre></details>
+<h2 id="section-3">2. Open the building information model</h2>
+<p><code>model</code> is our Python handle to the IFC information. Opening reads the file into memory; it does not edit the disk file.</p>
+<p>We disable geometry loading and placement rectification because our first questions concern data. Geometry export later uses a separate operation that loads what it needs.</p>
+<p><strong>Expected:</strong> the model opens. Large files may take longer. If the import fails, check the kernel and package version.</p>
+<details open><summary>Code cell 4</summary><pre><code>from compas_ifc.bim import BuildingInformationModel
+
+model = BuildingInformationModel(
+    str(IFC_PATH), load_geometries=False, rectify_placements=False
+)
+print("Model opened. The source file has not been saved over.")</code></pre></details>
+<h2 id="section-4">3. Find objects by type</h2>
+<p><strong>Predict:</strong> which classes should your building contain? <code>IfcWall</code> also matches subclasses such as <code>IfcWallStandardCase</code>.</p>
+<p><code>for</code> repeats the indented instruction; <code>len(...)</code> counts a list. Zero is a useful finding, not a coding failure. Classification may differ from what a shape suggests.</p>
+<p><strong>With the included sample:</strong> expect one wall, one window, no doors, and no slabs. The wall is stored as <code>IfcWallStandardCase</code>, a subclass matched by the <code>IfcWall</code> query.</p>
+<details open><summary>Code cell 5</summary><pre><code>for ifc_type in ["IfcWall", "IfcWindow", "IfcDoor", "IfcSlab"]:
+    found = model.get_elements_by_type(ifc_type)
+    print(ifc_type, ":", len(found))</code></pre></details>
+<h3>Select one class</h3>
+<p>Choose a class with a nonzero count. <code>elements</code> is a list; <code>[:5]</code> previews its first five items. Selection changes nothing.</p>
+<p>If you change the class, rerun this cell and the following cells to rebuild the selection and outputs.</p>
+<details open><summary>Code cell 6</summary><pre><code>ELEMENT_TYPE = "IfcWall"  # CHANGE: IfcWall, IfcWindow, IfcDoor, or IfcSlab
+elements = model.get_elements_by_type(ELEMENT_TYPE)
+print("Matching objects:", len(elements))
+for index, element in enumerate(elements[:5]):
+    print(index, element.ifc_type, element.name, element.global_id)</code></pre></details>
+<h3>Pick an object and read its card</h3>
+<p>Lists count from <strong>zero</strong>: <code>elements[0]</code> is the first item. Choose an index printed above. The index is temporary; <code>GlobalId</code> is the IFC identifier we use to find the object again. Names can be missing or repeated.</p>
+<p><strong>With the included sample:</strong> the wall is named <code>Wall for Test Example</code> and has GlobalId <code>3ZYW59sxj8lei475l7EhLU</code>. Its list index is <code>0</code>. Record the identifier. Why would matching by name alone be unreliable?</p>
+<details open><summary>Code cell 7</summary><pre><code>OBJECT_INDEX = 0  # CHANGE: an index from the preview
+if not elements:
+    raise ValueError("Choose a type with a nonzero count and rerun the selection.")
+if not 0 &lt;= OBJECT_INDEX &lt; len(elements):
+    raise ValueError("Choose an index within the matching list.")
+selected = elements[OBJECT_INDEX]
+SELECTED_ID = selected.global_id
+print("Type:", selected.ifc_type)
+print("Name:", selected.name)
+print("GlobalId:", SELECTED_ID)</code></pre></details>
+<h2 id="section-5">4. Read properties and location</h2>
+<p>A property set groups values authored in the model. A dictionary stores named values. <strong>Missing information is not zero or false.</strong> An authored value is not an independently verified result.</p>
+<p>The element is a COMPAS-facing wrapper. In this guided cell, <code>_ifc_entity</code> reaches its IFC-specific wrapper for properties and parent relationships. The underscore marks an implementation detail that can change between releases; we isolate that access here.</p>
+<p><strong>With the included sample:</strong> the wall has <code>Pset_WallCommon</code>, including <code>IsExternal: true</code> and <code>ThermalTransmittance: 0.24</code>; its parent is <code>Default Building Storey</code>. These are authored model values. The property output alone does not tell you the unit or prove physical performance.</p>
+<details open><summary>Code cell 8</summary><pre><code>import json
+
+ifc_object = selected._ifc_entity
+property_sets = ifc_object.property_sets or {}
+print(json.dumps(property_sets, indent=2, default=str) if property_sets else "No property sets reported.")
+parent = ifc_object.parent
+print("Parent:", getattr(parent, "Name", None) if parent is not None else "No parent reported")</code></pre></details>
+<h3>Check your understanding</h3>
+<ul><li>Find one property and describe its meaning. If none are present, record that finding.</li><li>Is its unit declared? What would you check before comparing files?</li><li>Does a name containing “concrete” prove the object's material?</li></ul>
+<p>Before comparing numerical properties, check units. Do not assume <code>2</code> means two metres. The optional CLI section below reports file units.</p>
+<h2 id="section-6">5. Change one object's name</h2>
+<p>We change a <strong>teaching label</strong>, not an engineering property. Reloading a fresh working model makes this step repeatable from the original. We find the same object by GlobalId.</p>
+<p>Assigning <code>.name</code> changes the working model in memory. No output IFC exists until we save.</p>
+<p><strong>Predict:</strong> should changing only the name change the object's class, identifier, or shape? With the included sample, the before name is <code>Wall for Test Example</code>; the after name is <code>Teaching example - renamed object</code>.</p>
+<details open><summary>Code cell 9</summary><pre><code>NEW_NAME = "Teaching example - renamed object"  # CHANGE
+working_model = BuildingInformationModel(
+    str(IFC_PATH), load_geometries=False, rectify_placements=False
+)
+working_object = working_model.get_element_by_global_id(SELECTED_ID)
+if working_object is None:
+    raise ValueError("Selected GlobalId not found. Rerun the selection on your input file.")
+old_name = working_object.name
+working_object.name = NEW_NAME
+print("Before:", old_name)
+print("After:", working_object.name)
+print("Identifier unchanged:", working_object.global_id == SELECTED_ID)</code></pre></details>
+<h2 id="section-7">6. Save a new IFC and reopen it</h2>
+<p>Saving writes our working model to a <strong>new file</strong>. The guard prevents replacing an existing output. For another run, choose a new output name or deliberately remove your previous exercise output in your file manager.</p>
+<p>Reopening matters: a correct value in memory does not prove it was saved. <code>assert</code> stops if a comparison fails.</p>
+<p><strong>Expected with the sample:</strong> reopening finds <code>Teaching example - renamed object</code> under the same GlobalId <code>3ZYW59sxj8lei475l7EhLU</code>, still an <code>IfcWallStandardCase</code>. This checks this edit; it does not validate every relationship or geometry in the file.</p>
+<details open><summary>Code cell 10</summary><pre><code>OUTPUT_DIR = Path("exports")
 OUTPUT_DIR.mkdir(exist_ok=True)
+EDITED_IFC_PATH = OUTPUT_DIR / "renamed_building.ifc"  # CHANGE for another run
+if EDITED_IFC_PATH.resolve() == IFC_PATH.resolve() or EDITED_IFC_PATH.exists():
+    raise FileExistsError("Choose a new EDITED_IFC_PATH; existing IFC files are protected.")
+working_model.save(str(EDITED_IFC_PATH))
+reopened = BuildingInformationModel(
+    str(EDITED_IFC_PATH), load_geometries=False, rectify_placements=False
+)
+checked = reopened.get_element_by_global_id(SELECTED_ID)
+assert checked is not None, "Object missing from saved file."
+assert checked.name == NEW_NAME, "Saved name differs from requested name."
+assert checked.ifc_type == selected.ifc_type, "IFC class changed."
+print("Checked name:", checked.name)
+print("Checked GlobalId:", checked.global_id)
+print("New IFC:", EDITED_IFC_PATH.resolve())</code></pre></details>
+<h3>Record your change</h3>
+<p>This JSON exercise log helps another student reproduce your work. It is not a complete model comparison or an engineering approval.</p>
+<details open><summary>Code cell 11</summary><pre><code>record = {
+    "input": str(IFC_PATH.resolve()), "source": MODEL_SOURCE,
+    "output": str(EDITED_IFC_PATH.resolve()), "global_id": SELECTED_ID,
+    "old_name": old_name, "new_name": checked.name,
+    "python": sys.version.split()[0],
+    "packages": {p: version(p) for p in ["compas", "compas_ifc"]},
+    "check": "reopened name, GlobalId lookup, and IFC class",
+}
+RECORD_PATH = EDITED_IFC_PATH.with_suffix(".lesson.json")
+RECORD_PATH.write_text(json.dumps(record, indent=2), encoding="utf-8")
+print("Exercise record:", RECORD_PATH.resolve())</code></pre></details>
+<h2 id="section-8">7. Optional: inspect using the CLI</h2>
+<p>The command-line interface is another way to use the library. Read the helper without memorising it: <code>subprocess</code> runs another program with the notebook's Python; <code>--json</code> asks for structured output; <code>json.loads</code> converts that into Python values.</p>
+<p>CLI commands depend on the release. For an unknown command, ask your instructor to compare <code>python -m compas_ifc --help</code> with the lesson.</p>
+<p><strong>Expected:</strong> file schema, units, and counts; then a spatial hierarchy. Compare the hierarchy with the parent you read earlier.</p>
+<details open><summary>Code cell 12</summary><pre><code>import subprocess
 
-if not IFC_PATH.exists():
-    raise FileNotFoundError(
-        f"Place an IFC file at {IFC_PATH.resolve()} or change IFC_PATH."
-    )
-
-print(f"Using: {IFC_PATH.resolve()}")</code></pre></details>
-<h2>2. Record the environment</h2>
-<p>A reproducible notebook records the interpreter and package versions next to its outputs.</p>
-<details open><summary>Code cell 3</summary><pre><code>import compas
-import compas_ifc
-
-print("Python:", sys.version)
-print("COMPAS:", getattr(compas, "__version__", "unknown"))
-print("compas_ifc:", getattr(compas_ifc, "__version__", "unknown"))
-try:
-    import compas_viewer
-    print("compas_viewer:", getattr(compas_viewer, "__version__", "importable"))
-except ImportError as error:
-    print("compas_viewer is not importable in this kernel:", error)</code></pre></details>
-<h2>3. Use the <code>compas_ifc</code> CLI from Python</h2>
-<p>The CLI is useful for learning because each command has one clear job. The <code>--json</code> option gives the notebook structured data instead of text intended only for a terminal.</p>
-<details open><summary>Code cell 4</summary><pre><code>def run_ifc(*arguments, json_output=True):
+def run_ifc(*arguments, json_output=True):
     command = [sys.executable, "-m", "compas_ifc", *map(str, arguments)]
     if json_output:
         command.append("--json")
-    result = subprocess.run(
-        command,
-        check=True,
-        capture_output=True,
-        text=True,
-    )
-    return json.loads(result.stdout) if json_output else result.stdout
+    result = subprocess.run(command, capture_output=True, text=True)
+    if result.returncode != 0:
+        raise RuntimeError(f"COMPAS IFC command failed:\n{result.stderr or result.stdout}")
+    if not json_output:
+        return result.stdout
+    try:
+        return json.loads(result.stdout)
+    except json.JSONDecodeError as error:
+        raise RuntimeError(f"Expected JSON. Check the CLI version/output:\n{result.stdout}") from error
 
-info = run_ifc("info", IFC_PATH)
-print(json.dumps(info, indent=2))</code></pre></details>
-<h3>Explore the spatial hierarchy</h3>
-<p>A building model is not just a collection of shapes. Its spatial hierarchy connects projects, buildings, storeys, and elements.</p>
-<details open><summary>Code cell 5</summary><pre><code>tree = run_ifc("tree", IFC_PATH, "--depth", 3)
-print(json.dumps(tree, indent=2))</code></pre></details>
-<h2>4. Query elements by IFC type</h2>
-<p>Change <code>ELEMENT_TYPE</code> and run this cell again. Try <code>IfcWall</code>, <code>IfcWindow</code>, <code>IfcDoor</code>, or <code>IfcSlab</code>.</p>
-<details open><summary>Code cell 6</summary><pre><code>ELEMENT_TYPE = "IfcWall"
-elements_json = run_ifc("list", IFC_PATH, "--type", ELEMENT_TYPE, "--limit", 10)
-print(json.dumps(elements_json, indent=2))</code></pre></details>
-<h2>5. Use the Python object model</h2>
-<p>The same model can be opened through <code>BuildingInformationModel</code>. Start without geometry when the question is about names, types, relationships, or property sets; this keeps the example focused on BIM data.</p>
-<details open><summary>Code cell 7</summary><pre><code>from compas_ifc.bim import BuildingInformationModel
-
-model = BuildingInformationModel(
-    str(IFC_PATH),
-    load_geometries=False,
-    rectify_placements=False,
-)
-
-elements = model.get_elements_by_type(ELEMENT_TYPE)
-print(f"Found {len(elements)} {ELEMENT_TYPE} elements.")
-for element in elements[:5]:
-    print(element.global_id, element.name, element.ifc_type)</code></pre></details>
-<h3>Inspect one element's property sets</h3>
-<p>The wrapper exposes convenient identity fields. The underlying IFC entity provides IFC-specific extensions such as <code>property_sets</code>.</p>
-<details open><summary>Code cell 8</summary><pre><code>if not elements:
-    raise ValueError(f"No {ELEMENT_TYPE} elements were found; try another type.")
-
-first_element = elements[0]
-print("Name:", first_element.name)
-print("GlobalId:", first_element.global_id)
-print("Property sets:")
-print(json.dumps(first_element._ifc_entity.property_sets, indent=2, default=str))</code></pre></details>
-<h2>6. Export the filtered geometry</h2>
-<p>Now we ask <code>compas_ifc</code> for geometry for the selected IFC class. The OBJ is a geometry handoff: semantic IFC data stays in the model, while the exported mesh is convenient for COMPAS visualization.</p>
-<details open><summary>Code cell 9</summary><pre><code>OBJ_PATH = OUTPUT_DIR / f"{ELEMENT_TYPE.lower()}.obj"
-result = subprocess.run(
-    [
-        sys.executable,
-        "-m",
-        "compas_ifc",
-        "export",
-        str(IFC_PATH),
-        "--type",
-        ELEMENT_TYPE,
-        "--to",
-        str(OBJ_PATH),
-    ],
-    check=True,
-    capture_output=True,
-    text=True,
-)
-print(f"Exported: {OBJ_PATH.resolve()}")
-if result.stdout.strip():
-    print(result.stdout)</code></pre></details>
-<h2>7. Load the result as COMPAS geometry</h2>
-<p>A COMPAS <code>Mesh</code> gives us geometry and topology methods independent of the original IFC query.</p>
-<details open><summary>Code cell 10</summary><pre><code>from compas.datastructures import Mesh
-
-mesh = Mesh.from_obj(str(OBJ_PATH))
-print("Vertices:", mesh.number_of_vertices())
-print("Edges:", mesh.number_of_edges())
-print("Faces:", mesh.number_of_faces())
-
-MESH_JSON_PATH = Path("selected_geometry.json")
-mesh.to_json(str(MESH_JSON_PATH))
-print(f"Serialized for the viewer: {MESH_JSON_PATH.resolve()}")</code></pre></details>
-<h2>8. Open <code>compas_viewer</code> without blocking the notebook</h2>
-<p>The viewer code lives in <code>viewer_detached.py</code> so students can read it as a small standalone COMPAS program. The notebook starts it in a separate process.</p>
-<details open><summary>Code cell 11</summary><pre><code>VIEWER_SCRIPT = Path("viewer_detached.py")
-if not VIEWER_SCRIPT.exists():
-    raise FileNotFoundError(VIEWER_SCRIPT)
-
-viewer_process = subprocess.Popen(
-    [sys.executable, str(VIEWER_SCRIPT.resolve())],
-    cwd=str(Path.cwd()),
-    start_new_session=True,
-    stdout=subprocess.DEVNULL,
-    stderr=subprocess.DEVNULL,
-)
-print("Viewer launched in a separate process. Close its window when finished.")
-print("Process id:", viewer_process.pid)</code></pre></details>
-<h2>Exercises</h2>
-<p>1. Change <code>ELEMENT_TYPE</code> to <code>IfcWindow</code> and rerun from the query cell. 2. Add <code>--where</code>, for example <code>"OverallHeight&gt;2"</code>, to a CLI query. 3. Find a storey with <code>run_ifc("list", IFC_PATH, "--type", "IfcBuildingStorey")</code>, then use <code>--in</code> to query only elements contained in it. 4. Change <code>facecolor</code> or <code>linecolor</code> in <code>viewer_detached.py</code> using a COMPAS <code>Color</code> object. 5. Explain why the IFC element's <code>property_sets</code> and the exported COMPAS mesh are useful for different questions.</p>
+print(json.dumps(run_ifc("info", IFC_PATH), indent=2))</code></pre></details>
+<details open><summary>Code cell 13</summary><pre><code>print(json.dumps(run_ifc("tree", IFC_PATH, "--depth", 3), indent=2))</code></pre></details>
+<h3>Export the selected class as IFC</h3>
+<p>This exports the selected class from the <strong>original</strong> file, so your name edit is absent. Use <code>EDITED_IFC_PATH</code> as the input if you want that edit included.</p>
+<p>By default, <code>export-ifc</code> retains the selection's spatial ancestors and linked information. A subset is not the whole building. Reopen it and compare selected GlobalIds; additional spatial objects are expected.</p>
+<p><strong>Expected:</strong> matching selected-class identifiers. This is a focused identity check, not complete validation of geometry, materials, or relationships.</p>
+<details open><summary>Code cell 14</summary><pre><code>SUBSET_PATH = OUTPUT_DIR / f"{ELEMENT_TYPE.lower()}_subset.ifc"
+if SUBSET_PATH.exists() or SUBSET_PATH.resolve() == IFC_PATH.resolve():
+    raise FileExistsError("Choose a new SUBSET_PATH before exporting again.")
+print(run_ifc("export-ifc", IFC_PATH, "--type", ELEMENT_TYPE, "--out", SUBSET_PATH, json_output=False))
+subset = BuildingInformationModel(str(SUBSET_PATH), load_geometries=False, rectify_placements=False)
+subset_elements = subset.get_elements_by_type(ELEMENT_TYPE)
+assert {e.global_id for e in subset_elements} == {e.global_id for e in elements}
+print("Checked selected-class IDs:", len(subset_elements))</code></pre></details>
+<h2 id="section-9">8. Practice and hand in</h2>
+<ul><li>Select another class. Record its count and one GlobalId. Explain why class matters even when shapes look alike.</li><li>Rename another object, save to a different filename, and reopen it. Hand in the exercise record and new IFC if sharing is permitted.</li><li>Explain the difference between selecting, editing in memory, and saving. Which makes a persistent change?</li><li>Optional: export windows instead of walls and check which GlobalId appears in the smaller IFC.</li></ul>
+<p><strong>Self-check:</strong> a name edit keeps identifier and class; selection changes nothing; saving makes the edit persistent; reopening checks persistence; a subset contains selected objects plus needed context.</p>
+<p>In Binder's left file browser, open <code>exports</code>, right-click <code>renamed_building.ifc</code> and <code>renamed_building.lesson.json</code>, and choose <strong>Download</strong> for each before closing the session. Include the input source, package versions, GlobalId, before/after name, and reopened-file check. Report only checks you performed.</p>
+<h2 id="section-10">Help when a cell fails</h2>
+<ul><li><strong>ModuleNotFoundError:</strong> choose the course kernel; compare its Python executable with the one printed above.</li><li><strong>FileNotFoundError:</strong> compare the working folder and full path with your file's location.</li><li><strong>NameError:</strong> an earlier cell has not run. Restart and run the core lesson in order.</li><li><strong>No matching objects:</strong> choose a nonzero class from the counts; classification varies between files.</li><li><strong>FileExistsError:</strong> choose a new output filename; previous IFC outputs are protected.</li><li><strong>Unknown CLI command or attribute:</strong> record the package version and ask the instructor to check API compatibility.</li><li><strong>Binder launch fails:</strong> the public course repository or its image may be unavailable. Tell your instructor the message shown by Binder.</li></ul>
+<p>When asking for help, share the cell heading, versions, and final error message. Avoid sharing a restricted model.</p>
+<h2 id="section-11">References and instructor notes</h2>
+<p>Revised using COMPAS Brain MCP's <code>compas_ifc</code> skill, cookbook, and workflows. Retrieved guidance is source information, not evidence of execution on a model.</p>
+<ul><li><a href="https://github.com/compas-dev/compas_ifc">COMPAS IFC source and examples</a></li><li><a href="https://compas.dev/compas_ifc/2.1.0/api/generated/compas_ifc.bim.BuildingInformationModel.html">BuildingInformationModel API</a></li><li><a href="https://compas.dev/compas_ifc/latest/cli.html">Command-line interface</a></li></ul>
+<p>The lesson, including the optional IFC subset export, was run on the included sample using Python 3.12.13, COMPAS 2.15.1, and <code>compas_ifc</code> 2.1.0 on Windows. The public Binder launch still needs a live check after the course repository is public.</p>
+<p>Suggested timing: 10 minutes on concepts and controls, 15 on selection and properties, 20 on the checked edit, and 10 on discussion or the optional subset export. Students use the course website and Binder in their browser.</p>
+    </div>
   </main>
 </body>
 </html>

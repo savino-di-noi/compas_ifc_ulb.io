@@ -6,6 +6,11 @@ on:
     paths:
       - "compas_ifc_compas_viewer_intro.ipynb"
       - "build_site.py"
+      - "viewer_detached.py"
+      - "README.md"
+      - "sample_building.ifc"
+      - "binder/environment.yml"
+      - "check_lesson.py"
       - ".github/workflows/pages.yml"
   workflow_dispatch:
 
@@ -17,7 +22,19 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - run: python -m pip install compas==2.15.1 compas_ifc==2.1.0
+      - run: python check_lesson.py
+
   build:
+    needs: verify
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:

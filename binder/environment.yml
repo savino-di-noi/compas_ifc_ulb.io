@@ -1,0 +1,10 @@
+name: ifc-course
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - pip
+  - ipykernel
+  - pip:
+      - compas==2.15.1
+      - compas_ifc==2.1.0

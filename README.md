@@ -1,77 +1,73 @@
-# Learn `compas_ifc` and `compas_viewer`
+# ifc.io: learn to work with IFC objects
 
-This small Jupyter lesson takes students from an IFC file to a filtered COMPAS
-mesh and a detached `compas_viewer` window.
+A beginner Jupyter lesson for bachelor students: understand IFC information,
+select an object, rename it, save a new IFC, and reopen it to check the change.
+An optional section inspects the file and exports a smaller IFC. Allow about
+45–60 minutes.
 
-## Before starting
+## Student access: browser only
 
-Create or activate an environment that contains the packages you want to use:
+Open the course website and choose **Open the live notebook on Binder**. Binder
+starts a hosted Python session with the package and sample IFC; students need
+only a web browser. It may take several minutes to build or start. Run cells
+from top to bottom with **Shift + Enter**. The `%pip install compas_ifc` cell
+is kept for portability; Binder already installs the package while building
+the session.
 
-- `compas_ifc`
-- `compas`
-- `compas_viewer`
-- Jupyter
+Binder sessions are temporary. Download the edited IFC and exercise record
+from JupyterLab before leaving. Use only the public teaching sample on this
+public service; do not upload restricted building models.
 
-Dependency installation is intentionally not performed by this deliverable.
-Place an IFC file named `building.ifc` beside the notebook, or change
-`IFC_PATH` in the first code cell.
+The lesson includes `sample_building.ifc`, copied from the COMPAS IFC repository's
+[`wall-with-opening-and-window.ifc`](https://github.com/compas-dev/compas_ifc/blob/main/data/wall-with-opening-and-window.ifc).
+It contains one wall, one window, and a storey. The default `IFC_PATH` points
+to this sample; an instructor can later provide another shareable model.
+The core lesson ends at the checked name edit and exercise record; section 7
+is optional.
 
-## Run the lesson
+Existing IFC outputs are protected. For another run, change output filenames
+or deliberately remove previous exercise outputs in the hosted session.
 
-1. Start Jupyter with this folder as the working directory, then open
-   `compas_ifc_compas_viewer_intro.ipynb`.
-2. Run the cells from top to bottom.
-3. The notebook first inspects the IFC file with the `compas_ifc` CLI.
-4. It then uses `BuildingInformationModel` to query elements and property sets.
-5. It exports a filtered element class to OBJ, converts it to a COMPAS `Mesh`,
-   and serializes that mesh for the viewer.
-6. The final cell starts `viewer_detached.py` in a separate process.
+## Build and publish the reading page
 
-`compas_viewer` opens a desktop Qt window. It needs a display and its
-`Viewer.show()` call blocks, so the lesson deliberately launches it separately.
-If the viewer cannot start, continue with the inspection and mesh-count cells;
-those do not require a viewer window.
+Run `python build_site.py` and open `site/index.html` to preview. The build uses
+Python's standard library, does not execute cells, and omits notebook outputs.
+It creates navigation, notebook and sample IFC downloads, and `lesson.zip` with
+the notebook, sample IFC, and this README.
 
-## Publish a static `github.io` lesson
+The reading page is static GitHub Pages. Its **Open the live notebook on Binder**
+link launches the same notebook on mybinder.org, where Python actually runs.
+The `binder/environment.yml` file defines Python 3.12 and the tested major
+packages for that hosted session. Binder needs this repository to be public.
+The current repository was not publicly reachable during this revision, so
+the live Binder launch can be tested only after it is published publicly.
 
-This folder includes `build_site.py` and `.github/workflows/pages.yml` for a
-view-only GitHub Pages site. The converter uses only the Python standard
-library, does not execute notebook cells, drops notebook outputs, escapes code
-and Markdown, and emits a restrictive Content Security Policy with no scripts.
+The included `.github/workflows/pages.yml` builds and deploys on `main`. In the
+repository's Pages settings, choose **GitHub Actions** as the source.
+Custom-domain configuration for `ifc.io` is a separate repository/domain-owner
+step. This revision does not publish the site or configure DNS.
 
-To publish it:
+## Instructor preparation and evidence
 
-1. Create a dedicated GitHub repository for the lesson.
-2. Copy the contents of this folder into the repository root. The workflow must
-   be at `.github/workflows/pages.yml`.
-3. Push the `main` branch.
-4. In the repository settings, set Pages → Source to **GitHub Actions**.
+Before class:
 
-The workflow uses the official GitHub Pages actions, grants read-only contents
-access to the build job, and grants Pages deployment permissions only to the
-deployment job. It deploys only the default branch.
+- Make the course repository public and launch the Binder link once to build
+  its image. Check launch time and the notebook's selected kernel.
+- Run the lesson on the bundled sample in Binder and record package versions.
+- Check the reopened name, GlobalId, and class; inspect the output in an IFC
+  application if available.
+- Run the optional IFC subset export if you plan to teach it.
+- Check that students can download the edited IFC and exercise record.
 
-The resulting page lets students read and copy the lesson code, but it cannot
-run Python or `compas_viewer` in the browser. Do not commit proprietary IFC
-files, access tokens, API keys, or student data. If students must execute cells,
-use a separately secured JupyterHub or other managed notebook service; do not
-add an upload endpoint or server-side execution to this static site.
+The revision used COMPAS Brain MCP's IFC skill, cookbook, and workflows, plus
+upstream source for the name setter and save/reopen API. The core lesson was
+executed with the included sample using Python 3.12.13, COMPAS 2.15.1, and
+`compas_ifc` 2.1.0 in the `compas_work` environment on Windows. The optional
+IFC subset export also passed on the sample. The public Binder session still
+needs a live check after the repository is public.
 
-For a local preview, run `python build_site.py` and open `site/index.html`.
+References:
 
-## Suggested student exercises
-
-- Change `ELEMENT_TYPE` from `IfcWall` to `IfcWindow`, `IfcDoor`, or `IfcSlab`.
-- Change the `--limit` value in the listing cell and compare the result.
-- Add a `--where` predicate to a CLI query.
-- Inspect the first element's `property_sets` and explain what is IFC data and
-  what is COMPAS geometry.
-- Change the viewer colours using `Color.from_hex(...)`.
-
-## Evidence boundary
-
-This notebook is a teaching scaffold. It was not run against a real IFC file in
-this workspace, and no package installation or viewer launch was performed.
-Package and API guidance is based on the local COMPAS Brain sources, whose
-relevant claims are recorded as `declared` or `unknown`, not as verified
-execution results.
+- [COMPAS IFC source](https://github.com/compas-dev/compas_ifc)
+- [BuildingInformationModel API](https://compas.dev/compas_ifc/2.1.0/api/generated/compas_ifc.bim.BuildingInformationModel.html)
+- [CLI documentation](https://compas.dev/compas_ifc/latest/cli.html)

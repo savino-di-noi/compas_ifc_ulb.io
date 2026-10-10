@@ -1,6 +1,7 @@
 """Open the mesh exported by the teaching notebook in compas_viewer."""
 
 from pathlib import Path
+import sys
 
 from compas.colors import Color
 from compas.data import json_load
@@ -8,7 +9,7 @@ from compas_viewer import Viewer
 
 
 HERE = Path(__file__).resolve().parent
-MESH_PATH = HERE / "selected_geometry.json"
+MESH_PATH = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else HERE / "selected_geometry.json"
 
 if not MESH_PATH.exists():
     raise FileNotFoundError(
